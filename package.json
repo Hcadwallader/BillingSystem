@@ -1,0 +1,19 @@
+{
+	"name": "billingsystem",
+	"version": "1.0.0",
+	"description": "Calculates the amount owed by clients as a percentage of earnings to be paid back over time",
+	"main": "processing.js",
+	"scripts": {
+		"build": "node processing.js",
+		"test": "jest"
+	},
+	"author": "HSchwan",
+	"license": "ISC",
+	"type": "module",
+	"dependencies": {
+		"@babel/preset-env": "^7.16.11",
+		"axios": "^0.26.1",
+		"babel-jest": "^27.5.1",
+		"jest": "^27.5.1"
+	}
+}
