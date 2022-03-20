@@ -13,8 +13,8 @@ let endDate = process.argv[3];
 const customers = new Map();
 
 const simulate = () => {
-	let dateArray = getDates(new Date(startDate), new Date(endDate));
-	//let dateArray = getDates(new Date('2022-01-02'), new Date('2022-01-06'));
+	//let dateArray = getDates(new Date(startDate), new Date(endDate));
+	let dateArray = getDates(new Date('2022-01-02'), new Date('2022-01-06'));
 
 	dateArray.map((d) => {
 		runBilling(d);
@@ -49,7 +49,7 @@ const runBilling = async (date) => {
 		customer.addRevenue(date, revenue.amount);
 	}
 
-    // calculate charges and charge customers
+	// calculate charges and charge customers
 	for (const c of customerIds) {
 		let customer = getCustomer(c);
 		let chargeList = customer.processTodaysAdvances(date);

@@ -6,7 +6,7 @@ To set up:
 
 To run solution:
 
-`npm run build`
+`npm run build ${start_date} ${end_date}`
 
 To run tests:
 
