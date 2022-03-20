@@ -3,9 +3,9 @@ import {
 	getAdvances,
 	getRevenue,
 	issueCharge,
-} from './apiClient.js';
-import Customer from './customer.js';
-import { getDates } from './utilities.js';
+} from './services/apiClient.js';
+import Customer from './models/customer.js';
+import { getDates } from './utilities/dateHelper.js';
 
 let startDate = process.argv[2];
 let endDate = process.argv[3];

@@ -1,5 +1,5 @@
-import Advance from './advance.js';
-import Charge from './charge.js';
+import Advance from '../advance.js';
+import Charge from '../charge.js';
 test('Advance calculates repayment correct v1', () => {
 	let advance = new Advance({
 		id: 1,

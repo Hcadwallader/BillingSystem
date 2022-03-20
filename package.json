@@ -2,9 +2,9 @@
 	"name": "billingsystem",
 	"version": "1.0.0",
 	"description": "Calculates the amount owed by clients as a percentage of earnings to be paid back over time",
-	"main": "processing.js",
+	"main": "main.js",
 	"scripts": {
-		"build": "node processing.js",
+		"build": "node main.js",
 		"test": "jest"
 	},
 	"author": "HSchwan",
