@@ -34,8 +34,4 @@ export default class Advance {
 		}
 		return currentCharge;
 	}
-
-	updateTotalRemaining(todaysPayment) {
-		this.totalRemaining = this.totalRemaining - todaysPayment;
-	}
 }
