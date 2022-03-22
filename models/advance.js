@@ -25,14 +25,14 @@ export default class Advance {
 		let amount =
 			revenue * (this.repaymentPercentage / 100) +
 			this.leftoverChargeAmount;
-			this.leftoverChargeAmount = 0;
+		this.leftoverChargeAmount = 0;
 		if (this.totalRemaining - amount < 0) {
 			amount = this.totalRemaining;
 		}
 
 		const chargeLimit = 10000;
 		if (amount > chargeLimit) {
-			this.leftoverChargeAmount = chargeLimit - amount;
+			this.leftoverChargeAmount = amount - chargeLimit;
 			amount = chargeLimit;
 		}
 		let currentCharge = new Charge(date, amount, this.mandateId, this.id);
