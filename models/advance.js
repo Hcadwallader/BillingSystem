@@ -1,5 +1,4 @@
 import Charge from './charge.js';
-import { formatDate } from '../utilities/dateHelper.js';
 
 export default class Advance {
 	constructor(advance) {

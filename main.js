@@ -26,27 +26,33 @@ const getCustomer = (id) => {
 };
 
 const runBilling = async (date) => {
+	// TODO - get charges that failed from previous days (use customers object above)
+
 	// Get advances
 	let todaysAdvances = await getAdvances(date);
 
-	// Filter out where repayment_start_date < today
-	let advancesToBePaidBackToday = todaysAdvances.filter(
-		(a) => a['repayment_start_date'] <= date
-	);
+	if (todaysAdvances.length > 0) {
+		// Filter out where repayment_start_date < today
+		let advancesToBePaidBackToday = todaysAdvances.filter(
+			(a) => a['repayment_start_date'] <= date
+		);
 
-	// Map advances
-	await advancesToBePaidBackToday.map((ad) => {
-		var customer = getCustomer(ad['customer_id']);
-		customer.addAdvance(ad);
-		customers.set(customer.id, customer);
-	});
+		// Map advances
+		await advancesToBePaidBackToday.map((ad) => {
+			var customer = getCustomer(ad['customer_id']);
+			customer.addAdvance(ad);
+			customers.set(customer.id, customer);
+		});
+	}
 
 	// Get revenue
 	let customerIds = customers.keys();
 	for (const c of customerIds) {
 		let revenue = await getRevenue(c, date);
-		let customer = getCustomer(c);
-		customer.addRevenue(date, revenue.amount);
+		if (revenue) {
+			let customer = getCustomer(c);
+			customer.addRevenue(date, revenue.amount);
+		}
 	}
 
 	// calculate charges and charge customers
@@ -59,11 +65,13 @@ const runBilling = async (date) => {
 				charge.amount,
 				date
 			);
-			if (chargeResponse.statusCode === 200) {
+			if (chargeResponse) {
 				charge.markAsSuccessful();
 			}
 			if (charge.finalPayment) {
-				await billingComplete(charge.advanceId);
+				let billingResponse = await billingComplete(charge.advanceId);
+				// Todo - update billingComplete property on advance
+				console.log(billingResponse);
 			}
 		}
 	}

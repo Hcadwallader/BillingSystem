@@ -1,7 +1,9 @@
 import pkg from 'axios';
+
 const { get, post } = pkg;
 
 const baseUrl = 'https://billing.eng-test.wayflyer.com';
+const successResponse = 'Accepted';
 
 export const getAdvances = async (date) => {
 	try {
@@ -12,13 +14,14 @@ export const getAdvances = async (date) => {
 		});
 		return response.data.advances;
 	} catch (error) {
-		console.log(error.response.data.error);
+		console.log(`Error getting advances from API: ${error}`);
+		return [];
 	}
 };
 
 export const getRevenue = async (customerId, date) => {
-	//TODO - replace hard coded date
 	try {
+		//TODO - replace hard coded date
 		const response = await get(
 			`${baseUrl}/customers/${customerId}/revenues/${date}`,
 			{
@@ -29,46 +32,46 @@ export const getRevenue = async (customerId, date) => {
 		);
 		return response.data;
 	} catch (error) {
-		console.log(error.response.data.error);
+		console.log(`Error getting revenue from API: ${error}`);
+		return null;
 	}
 };
 
 export const issueCharge = async (mandateId, amount, date) => {
-	console.log(mandateId);
-	console.log(amount);
-	const data = {
-		amount: amount,
-	};
 	try {
+		const data = {
+			amount: amount,
+		};
 		const response = await post(
 			`${baseUrl}/mandates/${mandateId}/charge`,
 			data,
 			{
 				headers: {
-					Today: `2022-06-30`,
-					'Content-Type': 'application/json',
+					Today: date,
 				},
 			}
 		);
-		return response.data;
+		return response.data === successResponse;
 	} catch (error) {
-		console.log(error.response.data.error);
+		console.log(`Error when issuing charge: ${error}`);
+		return false;
 	}
 };
 
-export const billingComplete = async (advanceId) => {
+export const billingComplete = async (advanceId, date) => {
 	try {
 		const response = await post(
 			`${baseUrl}/advances/${advanceId}/billing_complete`,
+			{},
 			{
 				headers: {
-					Today: `2022-06-30`,
-					'Content-Type': 'application/json',
+					Today: date,
 				},
 			}
 		);
-		return response.data;
+		return response.data === successResponse;
 	} catch (error) {
-		console.log(error.response.data.error);
+		console.log(`Error when issuing charge: ${error}`);
+		return false;
 	}
 };
