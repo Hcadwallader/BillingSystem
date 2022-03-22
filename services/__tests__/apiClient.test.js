@@ -33,7 +33,7 @@ describe('Get advances', () => {
 		};
 		axios.get.mockResolvedValueOnce(mocked200ApiResponse(data));
 
-		let response = await getAdvances(defaultDate);
+		const response = await getAdvances(defaultDate);
 
 		expect(axios.get).toHaveBeenCalledWith(advancesUrl, {
 			headers: { Today: defaultDate },
@@ -47,7 +47,7 @@ describe('Get advances', () => {
 		};
 		axios.get.mockResolvedValueOnce(mocked200ApiResponse(data));
 
-		let response = await getAdvances(defaultDate);
+		const response = await getAdvances(defaultDate);
 
 		expect(axios.get).toHaveBeenCalledWith(advancesUrl, {
 			headers: { Today: defaultDate },
@@ -58,7 +58,7 @@ describe('Get advances', () => {
 	test('Handles error response', async () => {
 		axios.get.mockRejectedValueOnce();
 
-		let response = await getAdvances(defaultDate);
+		const response = await getAdvances(defaultDate);
 
 		expect(axios.get).toHaveBeenCalledWith(advancesUrl, {
 			headers: { Today: defaultDate },
@@ -68,14 +68,14 @@ describe('Get advances', () => {
 });
 
 describe('Get revenue', () => {
-	let expectedUrl = `https://billing.eng-test.wayflyer.com/customers/${customerId}/revenues/${defaultDate}`;
+	const expectedUrl = `https://billing.eng-test.wayflyer.com/customers/${customerId}/revenues/${defaultDate}`;
 	test('Handles successful response', async () => {
 		const data = {
 			amount: '8920.20',
 		};
 		axios.get.mockResolvedValueOnce(mocked200ApiResponse(data));
 
-		let response = await getRevenue(customerId, defaultDate);
+		const response = await getRevenue(customerId, defaultDate);
 
 		expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
 			headers: { Today: `2022-06-30` },
@@ -86,7 +86,7 @@ describe('Get revenue', () => {
 	test('Handles error response', async () => {
 		axios.get.mockRejectedValueOnce();
 
-		let response = await getRevenue(customerId, defaultDate);
+		const response = await getRevenue(customerId, defaultDate);
 
 		expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
 			headers: { Today: `2022-06-30` },
@@ -96,11 +96,11 @@ describe('Get revenue', () => {
 });
 
 describe('Issue charge', () => {
-	let expectedUrl = `https://billing.eng-test.wayflyer.com/mandates/${mandateId}/charge`;
+	const expectedUrl = `https://billing.eng-test.wayflyer.com/mandates/${mandateId}/charge`;
 	test('Handles successful response', async () => {
 		axios.post.mockResolvedValueOnce(mocked200ApiResponse('Accepted'));
 
-		let response = await issueCharge(mandateId, defaultAmount, defaultDate);
+		const response = await issueCharge(mandateId, defaultAmount, defaultDate);
 
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
@@ -113,7 +113,7 @@ describe('Issue charge', () => {
 	test('Handles failure response', async () => {
 		axios.post.mockResolvedValueOnce(mocked200ApiResponse('Failed'));
 
-		let response = await issueCharge(mandateId, defaultAmount, defaultDate);
+		const response = await issueCharge(mandateId, defaultAmount, defaultDate);
 
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
@@ -126,7 +126,7 @@ describe('Issue charge', () => {
 	test('Handles error response', async () => {
 		axios.post.mockRejectedValueOnce();
 
-		let response = await issueCharge(mandateId, defaultAmount, defaultDate);
+		const response = await issueCharge(mandateId, defaultAmount, defaultDate);
 
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
@@ -138,11 +138,11 @@ describe('Issue charge', () => {
 });
 
 describe('Billing complete', () => {
-	let expectedUrl = `https://billing.eng-test.wayflyer.com/advances/${defaultAdvance}/billing_complete`;
+	const expectedUrl = `https://billing.eng-test.wayflyer.com/advances/${defaultAdvance}/billing_complete`;
 	test('Handles successful response', async () => {
 		axios.post.mockResolvedValueOnce(mocked200ApiResponse('Accepted'));
 
-		let response = await billingComplete(defaultAdvance, defaultDate);
+		const response = await billingComplete(defaultAdvance, defaultDate);
 
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
@@ -155,7 +155,7 @@ describe('Billing complete', () => {
 	test('Handles failure response', async () => {
 		axios.post.mockResolvedValueOnce(mocked200ApiResponse('Failed'));
 
-		let response = await billingComplete(defaultAdvance, defaultDate);
+		const response = await billingComplete(defaultAdvance, defaultDate);
 
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
@@ -168,7 +168,7 @@ describe('Billing complete', () => {
 	test('Handles error response', async () => {
         axios.post.mockRejectedValueOnce();
 
-		let response = await billingComplete(defaultAdvance, defaultDate);
+		const response = await billingComplete(defaultAdvance, defaultDate);
 
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
