@@ -12,6 +12,7 @@ export default class Advance {
 			parseInt(advance['total_advanced']) + parseInt(advance['fee']);
 		this.billingComplete = false;
 		this.charges = new Map();
+		this.leftoverChargeAmount = 0;
 	}
 
 	calculateCharge(revenue, date) {
@@ -21,9 +22,18 @@ export default class Advance {
 			this.charges.has(date)
 		)
 			return null;
-		let amount = revenue * (this.repaymentPercentage / 100);
+		let amount =
+			revenue * (this.repaymentPercentage / 100) +
+			this.leftoverChargeAmount;
+			this.leftoverChargeAmount = 0;
 		if (this.totalRemaining - amount < 0) {
 			amount = this.totalRemaining;
+		}
+
+		const chargeLimit = 10000;
+		if (amount > chargeLimit) {
+			this.leftoverChargeAmount = chargeLimit - amount;
+			amount = chargeLimit;
 		}
 		let currentCharge = new Charge(date, amount, this.mandateId, this.id);
 		this.charges.set(date, currentCharge);

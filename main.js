@@ -54,7 +54,14 @@ const runBilling = async (date) => {
 		let customer = getCustomer(c);
 		let chargeList = customer.processTodaysAdvances(date);
 		for (const charge of chargeList) {
-			await issueCharge(charge.mandateId, charge.amount, date);
+			let chargeResponse = await issueCharge(
+				charge.mandateId,
+				charge.amount,
+				date
+			);
+			if (chargeResponse.statusCode === 200) {
+				charge.markAsSuccessful();
+			}
 			if (charge.finalPayment) {
 				await billingComplete(charge.advanceId);
 			}
