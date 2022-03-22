@@ -1,6 +1,8 @@
 import Customer from '../customer.js';
 import Advance from '../advance.js';
 
+//jest.mock('../advance.js');
+
 describe('Constructor', () => {
 	test('Creates customer', () => {
 		let customer = new Customer(1);
@@ -71,17 +73,22 @@ describe('Get revenue', () => {
 	});
 });
 
+// describe('Process todays advances', () => {
 
-describe('Process todays advances', () => {
-	test('Gets a revenue for the correct customer', () => {
-		let customer = new Customer(4);
+//     beforeEach(() => {
+//         Advance.mockClear();
+//       });
+// 	test('Gets a revenue for the correct customer', () => {
+// 		let customer = new Customer(4);
+//         const mockAdvance = Advance.mock.instances[0];
+//         const mockCalculateCharge = mockAdvance.calculateCharge;
 
-		expect(customer.revenue).toBeInstanceOf(Map);
+//         let date = '2022-02-01';
 
-		let date = '2022-02-01';
-		let amount = 1000;
-		customer.addRevenue(date, amount);
-		let retrievedRevenue = customer.getRevenue(date);
-		expect(retrievedRevenue).toBe(amount);
-	});
-});
+//         let chargeList = customer.processTodaysAdvances(date)
+
+//         expect(mockAdvance).toHaveBeenCalledWith(mockCalculateCharge);
+//         expect(mockAdvance).toHaveBeenCalledTimes(2);
+
+// 	});
+// });
