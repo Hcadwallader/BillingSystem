@@ -8,6 +8,7 @@ export const getDates = (startDate, endDate) => {
 	return dateArray;
 };
 
+// TODO - combine with getDates method as only used on one place
 export const formatDate = (date) => {
 	return date.toISOString().slice(0, 10);
 };
