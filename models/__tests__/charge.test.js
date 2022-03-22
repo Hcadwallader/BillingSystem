@@ -1,8 +1,7 @@
-import { beforeEach } from '@jest/globals';
 import Charge from '../charge.js';
 
 describe('Constructor', () => {
-	test('Minimum number of params provided', () => {
+	test('Minimum number of params', () => {
 		let charge = new Charge('2022-02-01', 1000, 2, 1);
 
 		expect(charge.date).toBe('2022-02-01');
@@ -24,7 +23,7 @@ describe('Constructor', () => {
 	});
 });
 
-describe('Mark as successful works correctly', () => {
+describe('Mark as successful', () => {
 	test('Update charge to successful when paid', () => {
 		let charge = new Charge('2022-02-01', 1000, 2, 1);
 		expect(charge.succeeded).toBe(false);
