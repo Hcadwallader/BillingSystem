@@ -51,7 +51,7 @@ export const processRevenue = async (id, todaysDate, chargeList) => {
 	let missingRevenues = customer.getMissingRevenues(todaysDate);
 
 	for (const date of missingRevenues) {
-		let revenue = await getRevenue(id, date);
+		let revenue = await getRevenue(id, date, todaysDate);
 		if (revenue) {
 			customer.addRevenue(date, revenue.amount);
 			missingRevenues = missingRevenues.filter((item) => item !== date);

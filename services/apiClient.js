@@ -9,7 +9,7 @@ export const getAdvances = async (date) => {
 	try {
 		const response = await get(`${baseUrl}/advances`, {
 			headers: {
-				Today: `${date}`,
+				Today: date,
 			},
 		});
 		return response.data.advances;
@@ -19,14 +19,13 @@ export const getAdvances = async (date) => {
 	}
 };
 
-export const getRevenue = async (customerId, date) => {
+export const getRevenue = async (customerId, date, todaysDate) => {
 	try {
-		//TODO - replace hard coded date
 		const response = await get(
 			`${baseUrl}/customers/${customerId}/revenues/${date}`,
 			{
 				headers: {
-					Today: `2022-06-30`,
+					Today: todaysDate,
 				},
 			}
 		);

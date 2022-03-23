@@ -68,6 +68,7 @@ describe('Get advances', () => {
 });
 
 describe('Get revenue', () => {
+	const todaysDate = '2022-06-30';
 	const expectedUrl = `https://billing.eng-test.wayflyer.com/customers/${customerId}/revenues/${defaultDate}`;
 	test('Handles successful response', async () => {
 		const data = {
@@ -75,10 +76,10 @@ describe('Get revenue', () => {
 		};
 		axios.get.mockResolvedValueOnce(mocked200ApiResponse(data));
 
-		const response = await getRevenue(customerId, defaultDate);
+		const response = await getRevenue(customerId, defaultDate, todaysDate);
 
 		expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
-			headers: { Today: `2022-06-30` },
+			headers: { Today: todaysDate },
 		});
 		expect(response).toEqual(data);
 	});
@@ -86,10 +87,10 @@ describe('Get revenue', () => {
 	test('Handles error response', async () => {
 		axios.get.mockRejectedValueOnce();
 
-		const response = await getRevenue(customerId, defaultDate);
+		const response = await getRevenue(customerId, defaultDate, todaysDate);
 
 		expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
-			headers: { Today: `2022-06-30` },
+			headers: { Today: todaysDate },
 		});
 		expect(response).toBeNull();
 	});
@@ -100,7 +101,11 @@ describe('Issue charge', () => {
 	test('Handles successful response', async () => {
 		axios.post.mockResolvedValueOnce(mocked200ApiResponse('Accepted'));
 
-		const response = await issueCharge(mandateId, defaultAmount, defaultDate);
+		const response = await issueCharge(
+			mandateId,
+			defaultAmount,
+			defaultDate
+		);
 
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
@@ -113,7 +118,11 @@ describe('Issue charge', () => {
 	test('Handles failure response', async () => {
 		axios.post.mockResolvedValueOnce(mocked200ApiResponse('Failed'));
 
-		const response = await issueCharge(mandateId, defaultAmount, defaultDate);
+		const response = await issueCharge(
+			mandateId,
+			defaultAmount,
+			defaultDate
+		);
 
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
@@ -126,7 +135,11 @@ describe('Issue charge', () => {
 	test('Handles error response', async () => {
 		axios.post.mockRejectedValueOnce();
 
-		const response = await issueCharge(mandateId, defaultAmount, defaultDate);
+		const response = await issueCharge(
+			mandateId,
+			defaultAmount,
+			defaultDate
+		);
 
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
@@ -166,7 +179,7 @@ describe('Billing complete', () => {
 	});
 
 	test('Handles error response', async () => {
-        axios.post.mockRejectedValueOnce();
+		axios.post.mockRejectedValueOnce();
 
 		const response = await billingComplete(defaultAdvance, defaultDate);
 
