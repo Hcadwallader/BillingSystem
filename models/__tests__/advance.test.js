@@ -189,3 +189,27 @@ describe('Add failed charge to list', () => {
 		expect(advance.failedCharges.get(date)).toBe(charge);
 	});
 });
+
+
+describe('Get failed charges list', () => {
+	test('Updates advance as complete for correct customer', () => {
+		let date = '2022-02-01';
+		let charge = new Charge(date, 1000, 2, 1);
+		let advance = new Advance({
+			id: 1,
+			mandate_id: 2,
+			repayment_percentage: 5,
+			fee: 6000,
+			total_advanced: 60000,
+			repayment_start_date: date,
+		});
+
+		expect(advance.failedCharges.size).toEqual(0);
+
+		advance.addFailedChargeToList(charge, date);
+
+		const chargeList = advance.getFailedChargesList();
+		expect(chargeList.size).toEqual(1);
+		expect(chargeList.get(date)).toBe(charge);
+	});
+});
