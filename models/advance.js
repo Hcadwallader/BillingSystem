@@ -55,4 +55,8 @@ export default class Advance {
 			this.failedCharges.set(date, charge);
 		}
 	}
+
+	getFailedChargesList(){
+		return this.failedCharges;
+	}
 }

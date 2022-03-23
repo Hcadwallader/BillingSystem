@@ -67,14 +67,18 @@ const runBilling = async (todaysDate) => {
 	// calculate charges and charge customers
 	for (const c of customerIds) {
 		let customer = getCustomer(c);
-
+		let advances = customer.advances;
 		let chargeList = [];
+
+		for(const ad of advances){
+			chargeList.push(ad.failedCharges);
+		}
 		chargeList.push(customer.processAdvances(todaysDate));
 		for (const charge of chargeList) {
 			let chargeResponse = await issueCharge(
 				charge.mandateId,
 				charge.amount,
-				todaysDate
+				charge.date
 			);
 			if (chargeResponse) {
 				charge.markAsSuccessful();
