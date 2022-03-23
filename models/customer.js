@@ -5,6 +5,7 @@ export default class Customer {
 		this.id = id;
 		this.advances = new Map();
 		this.revenue = new Map();
+		this.missingRevenue = [];
 	}
 
 	getId() {
@@ -24,7 +25,7 @@ export default class Customer {
 		return this.revenue.get(date);
 	}
 
-	processTodaysAdvances(date) {
+	processAdvances(date) {
 		var chargeList = [];
 		this.advances.forEach((a) => {
 			let charge = a.calculateCharge(this.getRevenue(date), date);
@@ -33,5 +34,16 @@ export default class Customer {
 			}
 		});
 		return chargeList;
+	}
+
+	addMissingRevenue(date) {
+		if (!this.missingRevenue.includes(date)) {
+			this.missingRevenue.push(date);
+		}
+	}
+
+	getMissingRevenues(todaysDate) {
+		this.addMissingRevenue(todaysDate);
+		return this.missingRevenue;
 	}
 }

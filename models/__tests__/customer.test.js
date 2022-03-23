@@ -74,10 +74,10 @@ describe('Get revenue', () => {
 	});
 });
 
-describe('Process todays advances', () => {
+describe('Process advances', () => {
 	const date = '2022-02-01';
 	const customer = new Customer(4);
-	test('Gets a revenue for the correct customer', () => {
+	test('Get charge for advance for the correct customer', () => {
 		Advance.mockImplementationOnce(() => {
 			return {
 				calculateCharge: () => {
@@ -95,7 +95,7 @@ describe('Process todays advances', () => {
 		customer.advances.set(2, new Advance());
 		customer.addRevenue(date, 10000);
 
-		const chargeList = customer.processTodaysAdvances(date);
+		const chargeList = customer.processAdvances(date);
 
 		expect(chargeList).toEqual(['new charge', 'another new charge']);
 	});
@@ -128,7 +128,47 @@ describe('Process todays advances', () => {
 		customer.advances.set(3, new Advance());
 		customer.addRevenue(date, 10000);
 
-		const chargeList = customer.processTodaysAdvances(date);
+		const chargeList = customer.processAdvances(date);
 		expect(chargeList).toEqual(['good charge']);
+	});
+});
+
+describe('Add missing revenue', () => {
+	test('Adds new date to missing revenue list', () => {
+		let customer = new Customer(4);
+
+		expect(customer.missingRevenue).toStrictEqual([]);
+
+		let date = '2022-02-01';
+
+		customer.addMissingRevenue(date);
+
+		expect(customer.missingRevenue).toContainEqual(date);
+	});
+	test('Date already in missing revenue list not added more than once', () => {
+		let customer = new Customer(4);
+
+		expect(customer.missingRevenue).toStrictEqual([]);
+
+		let date = '2022-02-01';
+
+		customer.addMissingRevenue(date);
+		expect(customer.missingRevenue).toContainEqual(date);
+
+		customer.addMissingRevenue(date);
+		expect(customer.missingRevenue).toContainEqual(date);
+	});
+});
+
+describe('Get Missing Revenues', () => {
+	test('Gets a list of dates with missing revenues', () => {
+		let customer = new Customer(4);
+		let data = ['2022-02-01', '2022-02-03', '2022-02-05', '2022-02-06'];
+		customer.addMissingRevenue('2022-02-01');
+		customer.addMissingRevenue('2022-02-03');
+		customer.addMissingRevenue('2022-02-05');
+
+		customer.getMissingRevenues('2022-02-06');
+		expect(customer.missingRevenue).toEqual(data);
 	});
 });

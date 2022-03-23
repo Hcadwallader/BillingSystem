@@ -25,16 +25,16 @@ const getCustomer = (id) => {
 	return customers.has(id) ? customers.get(id) : new Customer(id);
 };
 
-const runBilling = async (date) => {
+const runBilling = async (todaysDate) => {
 	// TODO - get charges that failed from previous days (use customers object above)
 
 	// Get advances
-	let todaysAdvances = await getAdvances(date);
+	let todaysAdvances = await getAdvances(todaysDate);
 
 	if (todaysAdvances.length > 0) {
-		// Filter out where repayment_start_date < today
+		// Filter out where repayment_start_date before today
 		let advancesToBePaidBackToday = todaysAdvances.filter(
-			(a) => a['repayment_start_date'] <= date
+			(a) => a['repayment_start_date'] <= todaysDate
 		);
 
 		// Map advances
@@ -47,23 +47,35 @@ const runBilling = async (date) => {
 
 	// Get revenue
 	let customerIds = customers.keys();
-	for (const c of customerIds) {
-		let revenue = await getRevenue(c, date);
-		if (revenue) {
-			let customer = getCustomer(c);
-			customer.addRevenue(date, revenue.amount);
-		}
+
+	for (const id of customerIds) {
+		let customer = getCustomer(id);
+		let missingRevenues = customer.getMissingRevenues(todaysDate);
+		missingRevenues.map((date) => {
+			let revenue = await getRevenue(id, date);
+			if (revenue) {
+				customer.addRevenue(date, revenue.amount);
+				missingRevenues = missingRevenues.filter(
+					(item) => item !== date
+				);
+			} else {
+				customer.addMissingRevenue(date);
+			}
+		});
 	}
 
 	// calculate charges and charge customers
 	for (const c of customerIds) {
 		let customer = getCustomer(c);
-		let chargeList = customer.processTodaysAdvances(date);
+
+		customer.advances;
+		let chargeList = [];
+		chargeList.push(customer.processAdvances(todaysDate));
 		for (const charge of chargeList) {
 			let chargeResponse = await issueCharge(
 				charge.mandateId,
 				charge.amount,
-				date
+				todaysDate
 			);
 			if (chargeResponse) {
 				charge.markAsSuccessful();
