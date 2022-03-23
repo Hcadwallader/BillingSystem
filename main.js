@@ -5,12 +5,21 @@ import {
 	issueCharge,
 } from './services/apiClient.js';
 import Customer from './models/customer.js';
-import { getDates } from './utilities/dateHelper.js';
 
 let startDate = process.argv[2];
 let endDate = process.argv[3];
 
 const customers = new Map();
+
+const getDates = (startDate, endDate) => {
+	let dateArray = [];
+	let currentDate = startDate;
+	while (currentDate <= endDate) {
+		dateArray.push(new Date(currentDate).toISOString().slice(0, 10));
+		currentDate.setDate(currentDate.getDate() + 1);
+	}
+	return dateArray;
+};
 
 const simulate = () => {
 	//let dateArray = getDates(new Date(startDate), new Date(endDate));
