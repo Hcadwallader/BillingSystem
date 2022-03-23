@@ -11,6 +11,7 @@ import {
 	processNewAdvances,
 	processRevenue,
 	getCustomer,
+	getDates,
 } from '../main.js';
 
 jest.mock('../services/apiClient.js');
@@ -23,6 +24,25 @@ beforeEach(() => {
 	getRevenue.mockClear();
 	issueCharge.mockClear();
 	billingComplete.mockClear();
+});
+
+describe('Get dates', () => {
+	test('Gets an array of all the dates between two dates', () => {
+		const dateArray = getDates(
+			new Date('2022-01-02'),
+			new Date('2022-01-06')
+		);
+
+		const expected = [
+			'2022-01-02',
+			'2022-01-03',
+			'2022-01-04',
+			'2022-01-05',
+		];
+
+		expect(dateArray.length).toEqual(4);
+		expect(dateArray).toEqual(expected);
+	});
 });
 
 describe('Get customer', () => {
@@ -95,7 +115,7 @@ describe('Process revenue', () => {
 
 		expect(getRevenue).toBeCalledTimes(1);
 		expect(getCustomer(id).revenue.size).toEqual(1);
-        expect(chargeList.length).toEqual(1);
+		expect(chargeList.length).toEqual(1);
 	});
 
 	test('Gets missing revenues', async () => {

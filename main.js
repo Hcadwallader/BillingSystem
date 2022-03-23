@@ -14,7 +14,7 @@ export const customers = new Map();
 export const getDates = (startDate, endDate) => {
 	let dateArray = [];
 	let currentDate = startDate;
-	while (currentDate <= endDate) {
+	while (currentDate < endDate) {
 		dateArray.push(new Date(currentDate).toISOString().slice(0, 10));
 		currentDate.setDate(currentDate.getDate() + 1);
 	}
