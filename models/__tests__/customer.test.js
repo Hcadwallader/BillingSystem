@@ -5,16 +5,17 @@ jest.mock('../advance.js');
 
 describe('Constructor', () => {
 	test('Creates customer', () => {
-		let customer = new Customer(1);
+		const customer = new Customer(1);
 		expect(customer.id).toBe(1);
 		expect(customer.advances).toBeInstanceOf(Map);
 		expect(customer.revenue).toBeInstanceOf(Map);
+		expect(customer.missingRevenue).toStrictEqual([]);
 	});
 });
 
 describe('Add advance', () => {
 	test('Adds advance to correct customer', () => {
-		let advance = {
+		const advance = {
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 5,

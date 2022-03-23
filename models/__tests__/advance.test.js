@@ -1,7 +1,6 @@
 import { expect } from '@jest/globals';
 import Advance from '../advance.js';
 import Charge from '../charge.js';
-import Customer from '../customer.js';
 
 describe('Constructor', () => {
 	test('Minimum number of fields provided', () => {

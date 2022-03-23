@@ -2,7 +2,7 @@
 	"name": "billingsystem",
 	"version": "1.0.0",
 	"description": "Calculates the amount owed by clients as a percentage of earnings to be paid back over time",
-	"main": "main.js",
+	"main": "index.js",
 	"scripts": {
 		"build": "node index.js",
 		"test": "jest --coverage"
