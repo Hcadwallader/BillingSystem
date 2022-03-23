@@ -7,12 +7,12 @@ import {
 import Customer from '../models/customer.js';
 import {
 	customers,
-	runBilling,
 	processNewAdvances,
 	processRevenue,
 	getCustomer,
 	getDates,
 	addDays,
+	processCharge,
 } from '../main.js';
 
 jest.mock('../services/apiClient.js');
@@ -150,22 +150,18 @@ describe('Process revenue', () => {
 });
 
 describe('Run billing', () => {
-	test('Handles single advance starting in the future', async () => {
-		getAdvances.mockReturnValueOnce(Promise.resolve([defaultAdvance()]));
-
-		runBilling(new Date('2022-03-02'));
-
-		// check the right variable is passed in
-		expect(getAdvances).toBeCalledTimes(1);
-		const call = getAdvances.mock.calls[0]; // will give you the first call to the mock
-		expect(call[0]).toMatchObject(new Date('2022-03-02'));
-
-		// check no other API calls are made
-		expect(getRevenue).toBeCalledTimes(0);
-		expect(issueCharge).toBeCalledTimes(0);
-		expect(billingComplete).toBeCalledTimes(0);
-	});
-
+	// test('Handles single advance starting in the future', async () => {
+	// 	getAdvances.mockReturnValueOnce(Promise.resolve([defaultAdvance()]));
+	// 	runBilling(new Date('2022-03-02'));
+	// 	// check the right variable is passed in
+	// 	expect(getAdvances).toBeCalledTimes(1);
+	// 	const call = getAdvances.mock.calls[0]; // will give you the first call to the mock
+	// 	expect(call[0]).toMatchObject(new Date('2022-03-02'));
+	// 	// check no other API calls are made
+	// 	expect(getRevenue).toBeCalledTimes(0);
+	// 	expect(issueCharge).toBeCalledTimes(0);
+	// 	expect(billingComplete).toBeCalledTimes(0);
+	// });
 	// test('Handles single advance that already needs repaying', async () => {
 	//
 	//     const todaysDate = new Date('2022-02-02')
@@ -194,6 +190,92 @@ describe('Run billing', () => {
 	//
 	//     expect(billingComplete).toBeCalledTimes(0);
 	// });
+});
+
+describe('Process charge', () => {
+	test('Processes valid charge', async () => {
+		let customer = new Customer(defaultCustomerId);
+		customer.addAdvance(defaultAdvance());
+		customer.addRevenue(date, 10000);
+		let chargeList = customer.processAdvances(date);
+		customers.set(defaultCustomerId, customer);
+
+		issueCharge.mockReturnValueOnce(Promise.resolve(true));
+
+		expect(
+			getCustomer(defaultCustomerId)
+				.getAdvance(defaultAdvance().id)
+				.charges.get(chargeList[0].date).succeeded
+		).toBeFalsy();
+
+		await processCharge(customer, chargeList[0], date);
+
+		expect(issueCharge).toBeCalledTimes(1);
+		expect(billingComplete).toBeCalledTimes(0);
+
+		expect(
+			getCustomer(defaultCustomerId)
+				.getAdvance(defaultAdvance().id)
+				.charges.get(chargeList[0].date).succeeded
+		).toBeTruthy();
+	});
+
+	test('Handles failed Charge', async () => {
+		let customer = new Customer(defaultCustomerId);
+		customer.addAdvance(defaultAdvance());
+		customer.addRevenue(date, 10000);
+		let chargeList = customer.processAdvances(date);
+		customers.set(defaultCustomerId, customer);
+
+		issueCharge.mockReturnValueOnce(Promise.resolve(false));
+
+		expect(
+			getCustomer(defaultCustomerId)
+				.getAdvance(defaultAdvance().id)
+				.charges.get(chargeList[0].date).succeeded
+		).toBeFalsy();
+
+		await processCharge(customer, chargeList[0], date);
+
+		expect(issueCharge).toBeCalledTimes(1);
+		expect(billingComplete).toBeCalledTimes(0);
+
+		expect(
+			getCustomer(defaultCustomerId)
+				.getAdvance(defaultAdvance().id)
+				.failedCharges.has(chargeList[0].date)
+		).toBeTruthy();
+	});
+
+	test('marks billing complete', async () => {
+		let customer = new Customer(defaultCustomerId);
+		let advance = defaultAdvance();
+		advance.total_advanced = 100;
+		advance.fee = 50;
+		customer.addAdvance(advance);
+		customer.addRevenue(date, 100000);
+		let chargeList = customer.processAdvances(date);
+		customers.set(defaultCustomerId, customer);
+
+		issueCharge.mockReturnValueOnce(Promise.resolve(true));
+
+		expect(
+			getCustomer(defaultCustomerId)
+				.getAdvance(defaultAdvance().id)
+				.charges.get(chargeList[0].date).succeeded
+		).toBeFalsy();
+
+		await processCharge(customer, chargeList[0], date);
+
+		expect(issueCharge).toBeCalledTimes(1);
+		expect(billingComplete).toBeCalledTimes(1);
+
+		expect(
+			getCustomer(defaultCustomerId)
+				.getAdvance(defaultAdvance().id)
+				.charges.get(chargeList[0].date).succeeded
+		).toBeTruthy();
+	});
 });
 
 const defaultCustomerId = 4;

@@ -73,6 +73,28 @@ export const getCustomer = (id) => {
 	return customers.has(id) ? customers.get(id) : new Customer(id);
 };
 
+export const processCharge = async (customer, charge, todaysDate) => {
+	let chargeResponse = await issueCharge(
+		charge.mandateId,
+		charge.amount,
+		charge.date
+	);
+	if (chargeResponse) {
+		charge.markAsSuccessful();
+	} else {
+		let currentAdvance = customer.getAdvance(charge.advanceId);
+		currentAdvance.addFailedChargeToList(charge, todaysDate);
+	}
+	if (charge.finalPayment) {
+		let billingResponse = await billingComplete(charge.advanceId);
+
+		if (billingResponse) {
+			let advance = customer.advance.get(charge.advanceId);
+			advance.updateBillingComplete();
+		}
+	}
+};
+
 export const runBilling = async (todaysDate) => {
 	// Get advances
 	let todaysAdvances = await getAdvances(todaysDate);
@@ -85,35 +107,13 @@ export const runBilling = async (todaysDate) => {
 	for (const id of customerIds) {
 		chargeList = await processRevenue(id, todaysDate, chargeList);
 
-		// customer.advances;
 		let customer = getCustomer(id);
-		const advances = customer.advances;
 
-		for (const ad of advances) {
-			chargeList.concat(ad.failedCharges);
-		}
+		chargeList = chargeList.concat(customer.getFailedCharges());
+		chargeList = chargeList.concat(customer.processAdvances(todaysDate));
 
-		chargeList.concat(customer.processAdvances(todaysDate));
 		for (const charge of chargeList) {
-			let chargeResponse = await issueCharge(
-				charge.mandateId,
-				charge.amount,
-				charge.date
-			);
-			if (chargeResponse) {
-				charge.markAsSuccessful();
-			} else {
-				let currentAdvance = customer.getAdvance(charge.advanceId);
-				currentAdvance.addFailedChargeToList(charge, todaysDate);
-			}
-			if (charge.finalPayment) {
-				let billingResponse = await billingComplete(charge.advanceId);
-
-				if (billingResponse) {
-					let advance = customer.advance.get(charge.advanceId);
-					advance.updateBillingComplete();
-				}
-			}
+			await processCharge(customer, charge, todaysDate);
 		}
 	}
 	return customers;
