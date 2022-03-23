@@ -44,4 +44,8 @@ export default class Advance {
 		}
 		return currentCharge;
 	}
+
+	updateBillingComplete() {
+		this.billingComplete = true;
+	}
 }

@@ -127,3 +127,19 @@ describe('Calculate charge', () => {
 		);
 	});
 });
+describe('Update billing complete', () => {
+	test('Updates advance as complete for correct customer', () => {
+		let advance = new Advance({
+			id: 1,
+			mandate_id: 2,
+			repayment_percentage: 5,
+			fee: 6000,
+			total_advanced: 60000,
+			repayment_start_date: '2022-02-01',
+		});
+
+		expect(advance.billingComplete).toBe(false);
+
+		advance.updateBillingComplete();
+	});
+});

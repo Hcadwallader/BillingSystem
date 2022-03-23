@@ -71,7 +71,10 @@ const runBilling = async (date) => {
 			if (charge.finalPayment) {
 				let billingResponse = await billingComplete(charge.advanceId);
 				// Todo - update billingComplete property on advance
-				console.log(billingResponse);
+				if (billingResponse) {
+					let advance = customer.advance.get(charge.advanceId);
+					advance.updateBillingComplete();
+				}
 			}
 		}
 	}
