@@ -21,6 +21,12 @@ export const getDates = (startDate, endDate) => {
 	return dateArray;
 };
 
+export const addDays = (date, days) => {
+	var result = new Date(date);
+	result.setDate(result.getDate() + days);
+	return result;
+};
+
 export const simulate = () => {
 	//let dateArray = getDates(new Date(startDate), new Date(endDate));
 	let dateArray = getDates(new Date('2022-01-02'), new Date('2022-01-06'));
@@ -34,7 +40,7 @@ export const processNewAdvances = async (todaysAdvances, todaysDate) => {
 	if (todaysAdvances.length > 0) {
 		// Filter out where repayment_start_date before today
 		const advancesToBePaidBackToday = todaysAdvances.filter(
-			(a) => a['repayment_start_date'] <= todaysDate
+			(a) => new Date(a['repayment_start_date']) <= todaysDate
 		);
 
 		// Map advances
@@ -55,7 +61,7 @@ export const processRevenue = async (id, todaysDate, chargeList) => {
 		if (revenue) {
 			customer.addRevenue(date, revenue.amount);
 			missingRevenues = missingRevenues.filter((item) => item !== date);
-			chargeList.concat(customer.processAdvances(date));
+			chargeList = chargeList.concat(customer.processAdvances(date));
 		} else {
 			customer.addMissingRevenue(date);
 		}

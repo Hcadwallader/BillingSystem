@@ -12,11 +12,12 @@ import {
 	processRevenue,
 	getCustomer,
 	getDates,
+	addDays,
 } from '../main.js';
 
 jest.mock('../services/apiClient.js');
 
-const date = new Date('2022-02-02');
+const date = new Date('2022-02-10');
 
 beforeEach(() => {
 	customers.clear();
@@ -69,7 +70,7 @@ describe('Process new advances', () => {
 	test('No advances provided', async () => {
 		expect(customers.size).toEqual(0);
 
-		processNewAdvances([], new Date('2022-02-02'));
+		await processNewAdvances([], new Date('2022-02-02'));
 
 		expect(getAdvances).toBeCalledTimes(0);
 		expect(customers.size).toEqual(0);
@@ -108,6 +109,7 @@ describe('Process revenue', () => {
 		const id = 2;
 		let chargeList = [];
 		let customer = new Customer(id);
+		customer.addAdvance(defaultAdvance());
 		customers.set(id, customer);
 		expect(getCustomer(id).revenue.size).toEqual(0);
 
@@ -125,10 +127,13 @@ describe('Process revenue', () => {
 			.mockReturnValueOnce(Promise.resolve({ amount: 8500 }));
 
 		const id = 2;
+		const yesterday = addDays(date, -1);
+		const dayBeforeYesterday = addDays(date, -2);
 		let chargeList = [];
 		let customer = new Customer(id);
-		customer.addMissingRevenue(date.getDate() - 1);
-		customer.addMissingRevenue(date.getDate() - 2);
+		customer.addMissingRevenue(yesterday);
+		customer.addMissingRevenue(dayBeforeYesterday);
+		customer.addAdvance(defaultAdvance());
 		customers.set(id, customer);
 		expect(getCustomer(id).revenue.size).toEqual(0);
 
@@ -138,8 +143,8 @@ describe('Process revenue', () => {
 
 		expect(getCustomer(id).revenue.size).toEqual(3);
 		expect(getCustomer(id).revenue.get(date)).toEqual(8500);
-		expect(getCustomer(id).revenue.get(date.getDate() - 1)).toEqual(10000);
-		expect(getCustomer(id).revenue.get(date.getDate() - 2)).toEqual(7000);
+		expect(getCustomer(id).revenue.get(yesterday)).toEqual(10000);
+		expect(getCustomer(id).revenue.get(dayBeforeYesterday)).toEqual(7000);
 		expect(chargeList.length).toEqual(3);
 	});
 });
@@ -204,13 +209,3 @@ const defaultAdvance = () => {
 		repayment_start_date: '2022-02-01',
 	};
 };
-
-let revenue = new Map();
-revenue.set(new Date('2022-01-01'), 2000);
-revenue.set(new Date('2022-01-02'), 2000);
-revenue.set(new Date('2022-01-03'), 2000);
-revenue.set(new Date('2022-01-04'), 2000);
-revenue.set(new Date('2022-01-05'), 2000);
-
-let charges = new Map();
-charges;
