@@ -19,6 +19,7 @@ const simulate = () => {
 	dateArray.map((d) => {
 		runBilling(d);
 	});
+	return customers;
 };
 
 const getCustomer = (id) => {
@@ -47,33 +48,35 @@ const runBilling = async (todaysDate) => {
 
 	// Get revenue
 	let customerIds = customers.keys();
+	let chargeList = [];
 
 	for (const id of customerIds) {
 		let customer = getCustomer(id);
 		let missingRevenues = customer.getMissingRevenues(todaysDate);
-		missingRevenues.map((date) => {
+
+		for (const date of missingRevenues) {
 			let revenue = await getRevenue(id, date);
 			if (revenue) {
 				customer.addRevenue(date, revenue.amount);
 				missingRevenues = missingRevenues.filter(
 					(item) => item !== date
 				);
+				chargeList.concat(customer.processAdvances(date));
 			} else {
 				customer.addMissingRevenue(date);
 			}
-		});
+		}
 	}
 
 	// calculate charges and charge customers
 	for (const c of customerIds) {
 		let customer = getCustomer(c);
 		let advances = customer.advances;
-		let chargeList = [];
 
-		for(const ad of advances){
+		for (const ad of advances) {
 			chargeList.push(ad.failedCharges);
 		}
-		chargeList.push(customer.processAdvances(todaysDate));
+		chargeList.concat(customer.processAdvances(todaysDate));
 		for (const charge of chargeList) {
 			let chargeResponse = await issueCharge(
 				charge.mandateId,
@@ -96,6 +99,7 @@ const runBilling = async (todaysDate) => {
 			}
 		}
 	}
+	return customers;
 };
 
 simulate();
