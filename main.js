@@ -36,7 +36,6 @@ const getCustomer = (id) => {
 };
 
 const runBilling = async (todaysDate) => {
-	// TODO - get charges that failed from previous days (use customers object above)
 
 	// Get advances
 	let todaysAdvances = await getAdvances(todaysDate);
@@ -100,7 +99,7 @@ const runBilling = async (todaysDate) => {
 			}
 			if (charge.finalPayment) {
 				let billingResponse = await billingComplete(charge.advanceId);
-				// Todo - update billingComplete property on advance
+
 				if (billingResponse) {
 					let advance = customer.advance.get(charge.advanceId);
 					advance.updateBillingComplete();
