@@ -51,12 +51,12 @@ export default class Advance {
 	}
 
 	addFailedChargeToList(charge, date) {
-		if (!this.charges.has(date)) {
+		if (!this.failedCharges.has(date)) {
 			this.failedCharges.set(date, charge);
 		}
 	}
 
-	getFailedChargesList(){
+	getFailedChargesList() {
 		return this.failedCharges;
 	}
 }
