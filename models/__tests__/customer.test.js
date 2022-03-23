@@ -1,5 +1,6 @@
 import Customer from '../customer.js';
 import Advance from '../advance.js';
+import { expect } from '@jest/globals';
 
 jest.mock('../advance.js');
 
@@ -10,6 +11,15 @@ describe('Constructor', () => {
 		expect(customer.advances).toBeInstanceOf(Map);
 		expect(customer.revenue).toBeInstanceOf(Map);
 		expect(customer.missingRevenue).toStrictEqual([]);
+	});
+});
+
+describe('Get id', () => {
+	test('Retrieves the correct customer id', () => {
+		const customer = new Customer(1);
+		const id = customer.getId(1);
+
+		expect(id).toEqual(customer.id);
 	});
 });
 
@@ -134,5 +144,23 @@ describe('Add missing revenue', () => {
 
 		customer.addMissingRevenue(date);
 		expect(customer.missingRevenue).toContainEqual(date);
+	});
+});
+
+describe('Get failed charges', () => {
+	test('Adds new date to missing revenue list', () => {
+		let customer = new Customer(4);
+
+		Advance.mockImplementationOnce(() => {
+			return {
+				getFailedChargesList: () => {
+					return 'new charge';
+				},
+			};
+		});
+		customer.advances.set(1, new Advance());
+		const chargeList = customer.getFailedCharges();
+
+		expect(chargeList).toEqual(['new charge']);
 	});
 });

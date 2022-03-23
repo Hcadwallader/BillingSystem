@@ -50,4 +50,12 @@ export default class Customer {
 		this.addMissingRevenue(todaysDate);
 		return this.missingRevenue;
 	}
+
+	getFailedCharges() {
+		let failedCharges = [];
+		this.advances.forEach((a) => {
+			failedCharges = failedCharges.concat(a.getFailedChargesList());
+		});
+		return failedCharges;
+	}
 }
