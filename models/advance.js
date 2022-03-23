@@ -13,6 +13,7 @@ export default class Advance {
 		this.billingComplete = false;
 		this.charges = new Map();
 		this.leftoverChargeAmount = 0;
+		this.failedCharges = new Map();
 	}
 
 	calculateCharge(revenue, date) {
@@ -47,5 +48,11 @@ export default class Advance {
 
 	updateBillingComplete() {
 		this.billingComplete = true;
+	}
+
+	addFailedChargeToList(charge, date) {
+		if (!this.charges.has(date)) {
+			this.failedCharges.set(date, charge);
+		}
 	}
 }

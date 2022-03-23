@@ -1,5 +1,7 @@
+import { expect } from '@jest/globals';
 import Advance from '../advance.js';
 import Charge from '../charge.js';
+import Customer from '../customer.js';
 
 describe('Constructor', () => {
 	test('Minimum number of fields provided', () => {
@@ -22,6 +24,7 @@ describe('Constructor', () => {
 		expect(advance.billingComplete).toBe(false);
 		expect(advance.charges).toBeInstanceOf(Map);
 		expect(advance.leftoverChargeAmount).toBe(0);
+		expect(advance.failedCharges).toBeInstanceOf(Map);
 	});
 });
 describe('Calculate charge', () => {
@@ -127,6 +130,7 @@ describe('Calculate charge', () => {
 		);
 	});
 });
+
 describe('Update billing complete', () => {
 	test('Updates advance as complete for correct customer', () => {
 		let advance = new Advance({
@@ -141,5 +145,48 @@ describe('Update billing complete', () => {
 		expect(advance.billingComplete).toBe(false);
 
 		advance.updateBillingComplete();
+	});
+});
+
+describe('Add failed charge to list', () => {
+	test('Add new failed charge to list', () => {
+		let date = '2022-02-01';
+		let charge = new Charge(date, 1000, 2, 1);
+		let advance = new Advance({
+			id: 1,
+			mandate_id: 2,
+			repayment_percentage: 5,
+			fee: 6000,
+			total_advanced: 60000,
+			repayment_start_date: date,
+		});
+
+		expect(advance.failedCharges.size).toEqual(0);
+
+		advance.addFailedChargeToList(charge, date);
+		expect(advance.failedCharges.size).toEqual(1);
+		expect(advance.failedCharges.get(date)).toBe(charge);
+	});
+	test('Doesnt add existing failed charge to list', () => {
+		let date = '2022-02-01';
+		let charge = new Charge(date, 1000, 2, 1);
+		let advance = new Advance({
+			id: 1,
+			mandate_id: 2,
+			repayment_percentage: 5,
+			fee: 6000,
+			total_advanced: 60000,
+			repayment_start_date: date,
+		});
+
+		expect(advance.failedCharges.size).toEqual(0);
+
+		advance.addFailedChargeToList(charge, date);
+		expect(advance.failedCharges.size).toEqual(1);
+		expect(advance.failedCharges.get(date)).toBe(charge);
+
+		advance.addFailedChargeToList(charge, date);
+		expect(advance.failedCharges.size).toEqual(1);
+		expect(advance.failedCharges.get(date)).toBe(charge);
 	});
 });

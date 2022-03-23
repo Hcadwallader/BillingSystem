@@ -68,7 +68,6 @@ const runBilling = async (todaysDate) => {
 	for (const c of customerIds) {
 		let customer = getCustomer(c);
 
-		customer.advances;
 		let chargeList = [];
 		chargeList.push(customer.processAdvances(todaysDate));
 		for (const charge of chargeList) {
@@ -79,6 +78,9 @@ const runBilling = async (todaysDate) => {
 			);
 			if (chargeResponse) {
 				charge.markAsSuccessful();
+			} else {
+				let currentAdvance = customer.getAdvance(charge.advanceId);
+				currentAdvance.addFailedChargeToList(charge, todaysDate);
 			}
 			if (charge.finalPayment) {
 				let billingResponse = await billingComplete(charge.advanceId);

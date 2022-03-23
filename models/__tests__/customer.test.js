@@ -12,16 +12,6 @@ describe('Constructor', () => {
 	});
 });
 
-describe('Get id', () => {
-	test('Returns id of provided customer', () => {
-		let customer = new Customer(4);
-
-		let customerId = customer.getId();
-
-		expect(customerId).toBe(customer.id);
-	});
-});
-
 describe('Add advance', () => {
 	test('Adds advance to correct customer', () => {
 		let advance = {
@@ -46,7 +36,7 @@ describe('Add advance', () => {
 });
 
 describe('Add revenue', () => {
-	test('Adds a revenue to correct customer', () => {
+	test('Adds a revenue to correct customer for the date passed in', () => {
 		let customer = new Customer(4);
 
 		expect(customer.revenue).toBeInstanceOf(Map);
@@ -57,20 +47,6 @@ describe('Add revenue', () => {
 
 		expect(customer.revenue.has(date)).toBe(true);
 		expect(customer.revenue.get(date)).toEqual(amount);
-	});
-});
-
-describe('Get revenue', () => {
-	test('Gets a revenue for the correct customer', () => {
-		let customer = new Customer(4);
-
-		expect(customer.revenue).toBeInstanceOf(Map);
-
-		let date = '2022-02-01';
-		let amount = 1000;
-		customer.addRevenue(date, amount);
-		let retrievedRevenue = customer.getRevenue(date);
-		expect(retrievedRevenue).toBe(amount);
 	});
 });
 
@@ -157,18 +133,5 @@ describe('Add missing revenue', () => {
 
 		customer.addMissingRevenue(date);
 		expect(customer.missingRevenue).toContainEqual(date);
-	});
-});
-
-describe('Get Missing Revenues', () => {
-	test('Gets a list of dates with missing revenues', () => {
-		let customer = new Customer(4);
-		let data = ['2022-02-01', '2022-02-03', '2022-02-05', '2022-02-06'];
-		customer.addMissingRevenue('2022-02-01');
-		customer.addMissingRevenue('2022-02-03');
-		customer.addMissingRevenue('2022-02-05');
-
-		customer.getMissingRevenues('2022-02-06');
-		expect(customer.missingRevenue).toEqual(data);
 	});
 });

@@ -17,6 +17,10 @@ export default class Customer {
 		this.advances.set(currentAdvance.id, currentAdvance);
 	}
 
+	getAdvance(id) {
+		return this.advances.get(id);
+	}
+
 	addRevenue(date, amount) {
 		this.revenue.set(date, amount);
 	}
