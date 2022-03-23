@@ -84,7 +84,7 @@ export const runBilling = async (todaysDate) => {
 		const advances = customer.advances;
 
 		for (const ad of advances) {
-			chargeList.push(ad.failedCharges);
+			chargeList.concat(ad.failedCharges);
 		}
 
 		chargeList.concat(customer.processAdvances(todaysDate));
