@@ -4,8 +4,8 @@
 	"description": "Calculates the amount owed by clients as a percentage of earnings to be paid back over time",
 	"main": "main.js",
 	"scripts": {
-		"build": "node main.js",
-		"test": "jest"
+		"build": "node index.js",
+		"test": "jest --coverage"
 	},
 	"author": "HSchwan",
 	"license": "ISC",
