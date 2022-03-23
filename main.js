@@ -9,9 +9,9 @@ import Customer from './models/customer.js';
 let startDate = process.argv[2];
 let endDate = process.argv[3];
 
-const customers = new Map();
+export const customers = new Map();
 
-const getDates = (startDate, endDate) => {
+export const getDates = (startDate, endDate) => {
 	let dateArray = [];
 	let currentDate = startDate;
 	while (currentDate <= endDate) {
@@ -21,69 +21,72 @@ const getDates = (startDate, endDate) => {
 	return dateArray;
 };
 
-const simulate = () => {
+export const simulate = () => {
 	//let dateArray = getDates(new Date(startDate), new Date(endDate));
 	let dateArray = getDates(new Date('2022-01-02'), new Date('2022-01-06'));
 
 	dateArray.map((d) => {
 		runBilling(d);
 	});
-	return customers;
 };
 
-const getCustomer = (id) => {
-	return customers.has(id) ? customers.get(id) : new Customer(id);
-};
-
-const runBilling = async (todaysDate) => {
-
-	// Get advances
-	let todaysAdvances = await getAdvances(todaysDate);
-
+export const processNewAdvances = async (todaysAdvances, todaysDate) => {
 	if (todaysAdvances.length > 0) {
 		// Filter out where repayment_start_date before today
-		let advancesToBePaidBackToday = todaysAdvances.filter(
+		const advancesToBePaidBackToday = todaysAdvances.filter(
 			(a) => a['repayment_start_date'] <= todaysDate
 		);
 
 		// Map advances
 		await advancesToBePaidBackToday.map((ad) => {
-			var customer = getCustomer(ad['customer_id']);
+			const customer = getCustomer(ad['customer_id']);
 			customer.addAdvance(ad);
 			customers.set(customer.id, customer);
 		});
 	}
+};
+
+export const processRevenue = async (id, todaysDate, chargeList) => {
+	const customer = getCustomer(id);
+	let missingRevenues = customer.getMissingRevenues(todaysDate);
+
+	for (const date of missingRevenues) {
+		let revenue = await getRevenue(id, date);
+		if (revenue) {
+			customer.addRevenue(date, revenue.amount);
+			missingRevenues = missingRevenues.filter((item) => item !== date);
+			chargeList.concat(customer.processAdvances(date));
+		} else {
+			customer.addMissingRevenue(date);
+		}
+	}
+	return chargeList;
+};
+
+export const getCustomer = (id) => {
+	return customers.has(id) ? customers.get(id) : new Customer(id);
+};
+
+export const runBilling = async (todaysDate) => {
+	// Get advances
+	let todaysAdvances = await getAdvances(todaysDate);
+	await processNewAdvances(todaysAdvances, todaysDate);
 
 	// Get revenue
 	let customerIds = customers.keys();
 	let chargeList = [];
 
 	for (const id of customerIds) {
+		chargeList = await processRevenue(id, todaysDate, chargeList);
+
+		// customer.advances;
 		let customer = getCustomer(id);
-		let missingRevenues = customer.getMissingRevenues(todaysDate);
-
-		for (const date of missingRevenues) {
-			let revenue = await getRevenue(id, date);
-			if (revenue) {
-				customer.addRevenue(date, revenue.amount);
-				missingRevenues = missingRevenues.filter(
-					(item) => item !== date
-				);
-				chargeList.concat(customer.processAdvances(date));
-			} else {
-				customer.addMissingRevenue(date);
-			}
-		}
-	}
-
-	// calculate charges and charge customers
-	for (const c of customerIds) {
-		let customer = getCustomer(c);
-		let advances = customer.advances;
+		const advances = customer.advances;
 
 		for (const ad of advances) {
 			chargeList.push(ad.failedCharges);
 		}
+
 		chargeList.concat(customer.processAdvances(todaysDate));
 		for (const charge of chargeList) {
 			let chargeResponse = await issueCharge(
@@ -109,5 +112,3 @@ const runBilling = async (todaysDate) => {
 	}
 	return customers;
 };
-
-simulate();
