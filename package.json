@@ -14,6 +14,7 @@
 		"@babel/preset-env": "^7.16.11",
 		"axios": "^0.26.1",
 		"babel-jest": "^27.5.1",
-		"jest": "^27.5.1"
+		"jest": "^27.5.1",
+		"loglevel": "^1.8.0"
 	}
 }

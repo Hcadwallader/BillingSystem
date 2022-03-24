@@ -1,4 +1,7 @@
 import Advance from './advance.js';
+import log from 'loglevel';
+import { LOGICAL_OPERATORS } from '@babel/types';
+log.setLevel('debug');
 
 export default class Customer {
 	constructor(id) {
@@ -13,8 +16,13 @@ export default class Customer {
 	}
 
 	addAdvance(advance) {
+		log.debug(`add advance for: ${JSON.stringify(advance)}`);
 		let currentAdvance = new Advance(advance);
+		log.debug(
+			`add advance mapped advance: ${JSON.stringify(currentAdvance)}`
+		);
 		this.advances.set(currentAdvance.id, currentAdvance);
+		log.debug(this.advances);
 	}
 
 	getAdvance(id) {
