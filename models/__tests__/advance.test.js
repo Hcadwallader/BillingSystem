@@ -39,7 +39,7 @@ describe('Calculate charge', () => {
 		let date = new Date('2022-02-02');
 		let revenue = 16000;
 		expect(advance.calculateCharge(revenue, date)).toEqual(
-			new Charge(date, 800, 2, 1)
+			new Charge(date, '800.00', 2, 1)
 		);
 	});
 	test('Marks final charge correctly', () => {
@@ -54,7 +54,7 @@ describe('Calculate charge', () => {
 		let date = new Date('2022-02-02');
 		let revenue = 10000;
 		expect(advance.calculateCharge(revenue, date)).toEqual(
-			new Charge(date, 1000, 4, 1, true)
+			new Charge(date, '1000.00', 4, 1, true)
 		);
 	});
 	test('Charge does not exceed total amount owed', () => {
@@ -69,7 +69,7 @@ describe('Calculate charge', () => {
 		let date = new Date('2022-02-02');
 		let revenue = 100000;
 		expect(advance.calculateCharge(revenue, date)).toEqual(
-			new Charge(date, 1000, 2, 1, true)
+			new Charge(date, '1000.00', 2, 1, true)
 		);
 	});
 	test('Charge only taken after repayment start date', () => {
@@ -114,18 +114,18 @@ describe('Calculate charge', () => {
 		const revenue = 110000;
 
 		expect(advance.calculateCharge(revenue, date)).toEqual(
-			new Charge(date, 10000, 2, 1)
+			new Charge(date, '10000.00', 2, 1)
 		);
 		const revenueSecondDay = 10000;
 		const secondDay = new Date('2022-02-07');
 		expect(advance.calculateCharge(revenueSecondDay, secondDay)).toEqual(
-			new Charge(secondDay, 2000, 2, 1)
+			new Charge(secondDay, '2000.00', 2, 1)
 		);
 
 		const revenueThirdDay = 10000;
 		const thirdDay = new Date('2022-02-07');
 		expect(advance.calculateCharge(revenueThirdDay, thirdDay)).toEqual(
-			new Charge(thirdDay, 1000, 2, 1)
+			new Charge(thirdDay, '1000.00', 2, 1)
 		);
 	});
 });
