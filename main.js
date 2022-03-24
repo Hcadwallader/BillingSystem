@@ -70,9 +70,8 @@ export const processRevenue = async (id, todaysDate, chargeList) => {
 		let revenue = await getRevenue(id, date, todaysDate);
 		if (revenue) {
 			customer.addRevenue(date, revenue.amount);
-			customer.updateMissingRevenue(
-				missingRevenues.filter((item) => item !== date)
-			);
+			missingRevenues = missingRevenues.filter((item) => item !== date);
+			customer.updateMissingRevenue(missingRevenues);
 			chargeList = chargeList.concat(customer.processAdvances(date));
 		} else {
 			customer.addMissingRevenue(date);
