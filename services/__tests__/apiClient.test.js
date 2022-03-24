@@ -110,7 +110,12 @@ describe('Issue charge', () => {
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
 			{ amount: defaultAmount },
-			{ headers: { Today: defaultDate } }
+			{
+				headers: {
+					Today: defaultDate,
+					'Content-Type': 'application/json',
+				},
+			}
 		);
 		expect(response).toBeTruthy();
 	});
@@ -127,7 +132,12 @@ describe('Issue charge', () => {
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
 			{ amount: defaultAmount },
-			{ headers: { Today: defaultDate } }
+			{
+				headers: {
+					Today: defaultDate,
+					'Content-Type': 'application/json',
+				},
+			}
 		);
 		expect(response).toBeFalsy();
 	});
@@ -144,7 +154,12 @@ describe('Issue charge', () => {
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
 			{ amount: defaultAmount },
-			{ headers: { Today: defaultDate } }
+			{
+				headers: {
+					Today: defaultDate,
+					'Content-Type': 'application/json',
+				},
+			}
 		);
 		expect(response).toBeFalsy();
 	});
@@ -160,7 +175,12 @@ describe('Billing complete', () => {
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
 			{},
-			{ headers: { Today: defaultDate } }
+			{
+				headers: {
+					Today: defaultDate,
+					'Content-Type': 'application/json',
+				},
+			}
 		);
 		expect(response).toBeTruthy();
 	});
@@ -173,7 +193,12 @@ describe('Billing complete', () => {
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
 			{},
-			{ headers: { Today: defaultDate } }
+			{
+				headers: {
+					Today: defaultDate,
+					'Content-Type': 'application/json',
+				},
+			}
 		);
 		expect(response).toBeFalsy();
 	});
@@ -186,7 +211,12 @@ describe('Billing complete', () => {
 		expect(axios.post).toHaveBeenCalledWith(
 			expectedUrl,
 			{},
-			{ headers: { Today: defaultDate } }
+			{
+				headers: {
+					Today: defaultDate,
+					'Content-Type': 'application/json',
+				},
+			}
 		);
 		expect(response).toBeFalsy();
 	});

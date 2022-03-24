@@ -15,7 +15,7 @@ export const getAdvances = async (date) => {
 		});
 		return response.data.advances;
 	} catch (error) {
-		log.warn(`Error getting advances from API: ${error}`);
+		log.warn(`Error getting advances from API for date ${date}: ${error}`);
 		return [];
 	}
 };
@@ -32,7 +32,9 @@ export const getRevenue = async (customerId, date, todaysDate) => {
 		);
 		return response.data;
 	} catch (error) {
-		log.warn(`Error getting revenue from API: ${error}`);
+		log.warn(
+			`Error getting revenue from API for customer ${customerId} on date ${date} : ${error}`
+		);
 		return null;
 	}
 };
@@ -48,6 +50,7 @@ export const issueCharge = async (mandateId, amount, date, advanceId) => {
 			{
 				headers: {
 					Today: date,
+					'Content-Type': 'application/json',
 				},
 			}
 		);
@@ -58,7 +61,9 @@ export const issueCharge = async (mandateId, amount, date, advanceId) => {
 		}
 		return response.data === successResponse;
 	} catch (error) {
-		log.warn(`Error when issuing charge: ${error}`);
+		log.warn(
+			`Error when issuing charge for advance ${advanceId} mandate ${mandateId} for £${amount} on ${date}: ${error}`
+		);
 		return false;
 	}
 };
@@ -71,6 +76,7 @@ export const billingComplete = async (advanceId, date) => {
 			{
 				headers: {
 					Today: date,
+					'Content-Type': 'application/json',
 				},
 			}
 		);
@@ -81,7 +87,9 @@ export const billingComplete = async (advanceId, date) => {
 		}
 		return response.data === successResponse;
 	} catch (error) {
-		log.warn(`Error when issuing charge: ${error}`);
+		log.warn(
+			`Error when issuing charge for advance ${advanceId} on ${date}: ${error}`
+		);
 		return false;
 	}
 };

@@ -64,4 +64,12 @@ export default class Customer {
 		});
 		return failedCharges;
 	}
+
+	updateCharge(charge) {
+		this.advances.get(charge.advanceId).updateCharge(charge);
+	}
+
+	updateMissingRevenue(missingRevenue) {
+		this.missingRevenue = missingRevenue;
+	}
 }

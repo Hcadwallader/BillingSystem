@@ -64,4 +64,8 @@ export default class Advance {
 	getFailedChargesList() {
 		return Array.from(this.failedCharges.values());
 	}
+
+	updateCharge(charge) {
+		this.charges.set(charge.date, charge);
+	}
 }

@@ -29,9 +29,9 @@ export const runBilling = async (todaysDate) => {
 	await processNewAdvances(todaysAdvances, todaysDate);
 
 	let customerIds = customers.keys();
-	let chargeList = [];
 
 	for (const id of customerIds) {
+		let chargeList = [];
 		chargeList = await processRevenue(id, todaysDate, chargeList);
 
 		const customer = getCustomer(id);
@@ -70,7 +70,9 @@ export const processRevenue = async (id, todaysDate, chargeList) => {
 		let revenue = await getRevenue(id, date, todaysDate);
 		if (revenue) {
 			customer.addRevenue(date, revenue.amount);
-			missingRevenues = missingRevenues.filter((item) => item !== date);
+			customer.updateMissingRevenue(
+				missingRevenues.filter((item) => item !== date)
+			);
 			chargeList = chargeList.concat(customer.processAdvances(date));
 		} else {
 			customer.addMissingRevenue(date);
@@ -88,6 +90,8 @@ export const processCharge = async (customer, charge, todaysDate) => {
 	);
 	if (chargeResponse) {
 		charge.markAsSuccessful();
+		customer.updateCharge(charge);
+		customers.set(customer.id, customer);
 	} else {
 		const currentAdvance = customer.getAdvance(charge.advanceId);
 		currentAdvance.addFailedChargeToList(charge, todaysDate);
