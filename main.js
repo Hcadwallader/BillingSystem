@@ -13,15 +13,13 @@ let endDate = process.argv[3];
 
 export const customers = new Map();
 
-export const simulate = () => {
-	const dateArray = getDates(new Date(startDate), new Date(endDate));
-	//log.info('dateArray ' + dateArray);
-	//const dateArray = getDates(new Date('2022-02-05'), new Date('2022-02-06'));
-
+export const simulate = async() => {
 	log.debug('simulate called');
-	return dateArray.map((d) => {
-		runBilling(d);
-	});
+	const dateArray = getDates(new Date(startDate), new Date(endDate));
+
+	for (const date of dateArray){
+		await runBilling(date);
+	}
 };
 
 export const runBilling = async (todaysDate) => {
@@ -46,12 +44,13 @@ export const runBilling = async (todaysDate) => {
 			await processCharge(customer, charge, todaysDate);
 		}
 	}
-	log.debug(`customers ${customers} after billing run for date ${todaysDate}`);
+	log.debug(
+		`customers ${customers} after billing run for date ${todaysDate}`
+	);
 	return customers;
 };
 
 export const processNewAdvances = async (todaysAdvances, todaysDate) => {
-
 	if (todaysAdvances.length > 0) {
 		let advancesToBePaidBackToday = todaysAdvances.filter(
 			(a) => new Date(a['repayment_start_date']) <= new Date(todaysDate)
@@ -76,7 +75,6 @@ export const processRevenue = async (id, todaysDate, chargeList) => {
 			customer.addRevenue(date, revenue.amount);
 			missingRevenues = missingRevenues.filter((item) => item !== date);
 			chargeList = chargeList.concat(customer.processAdvances(date));
-
 		} else {
 			customer.addMissingRevenue(date);
 		}

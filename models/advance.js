@@ -36,7 +36,12 @@ export default class Advance {
 			this.leftoverChargeAmount = amount - chargeLimit;
 			amount = chargeLimit;
 		}
-		let currentCharge = new Charge(date, amount, this.mandateId, this.id);
+		let currentCharge = new Charge(
+			date,
+			amount.toFixed(2),
+			this.mandateId,
+			this.id
+		);
 		this.charges.set(date, currentCharge);
 		this.totalRemaining -= amount;
 		if (this.totalRemaining <= 0) {
