@@ -40,7 +40,7 @@ export const runBilling = async (todaysDate) => {
 
 		log.warn(`charge list: ${chargeList}`);
 
-		let customer = getCustomer(id);
+		const customer = getCustomer(id);
 
 		chargeList = chargeList.concat(customer.getFailedCharges());
 		chargeList = chargeList.concat(customer.processAdvances(todaysDate));
@@ -62,7 +62,7 @@ export const processNewAdvances = async (todaysAdvances, todaysDate) => {
 	if (todaysAdvances.length > 0) {
 		log.debug('advances found for today');
 		// Filter out where repayment_start_date before today
-		const advancesToBePaidBackToday = todaysAdvances.filter(
+		let advancesToBePaidBackToday = todaysAdvances.filter(
 			(a) => new Date(a['repayment_start_date']) <= new Date(todaysDate)
 		);
 
@@ -74,7 +74,7 @@ export const processNewAdvances = async (todaysAdvances, todaysDate) => {
 		// Map advances
 		await advancesToBePaidBackToday.map((ad) => {
 			let id = ad['customer_id'];
-			let customer = getCustomer(id);
+			const customer = getCustomer(id);
 			log.debug(`current advance: ${JSON.stringify(ad)}`);
 			customer.addAdvance(ad);
 			log.debug(`customer with advance ${JSON.stringify(customer)}`);
