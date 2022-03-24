@@ -13,6 +13,7 @@ import {
 	getDates,
 	addDays,
 	processCharge,
+	runBilling,
 } from '../main.js';
 
 jest.mock('../services/apiClient.js');
@@ -150,18 +151,22 @@ describe('Process revenue', () => {
 });
 
 describe('Run billing', () => {
-	// test('Handles single advance starting in the future', async () => {
-	// 	getAdvances.mockReturnValueOnce(Promise.resolve([defaultAdvance()]));
-	// 	runBilling(new Date('2022-03-02'));
-	// 	// check the right variable is passed in
-	// 	expect(getAdvances).toBeCalledTimes(1);
-	// 	const call = getAdvances.mock.calls[0]; // will give you the first call to the mock
-	// 	expect(call[0]).toMatchObject(new Date('2022-03-02'));
-	// 	// check no other API calls are made
-	// 	expect(getRevenue).toBeCalledTimes(0);
-	// 	expect(issueCharge).toBeCalledTimes(0);
-	// 	expect(billingComplete).toBeCalledTimes(0);
-	// });
+	test('Handles single advance starting in the future', async () => {
+		let advance = defaultAdvance();
+		advance.repayment_start_date = '2022-06-01';
+		getAdvances.mockReturnValueOnce(Promise.resolve([advance]));
+
+		runBilling(date);
+
+		expect(getAdvances).toBeCalledTimes(1);
+		const call = getAdvances.mock.calls[0];
+		expect(call[0]).toMatchObject(date);
+
+		// check no other API calls are made
+		expect(getRevenue).toBeCalledTimes(0);
+		expect(issueCharge).toBeCalledTimes(0);
+		expect(billingComplete).toBeCalledTimes(0);
+	});
 	// test('Handles single advance that already needs repaying', async () => {
 	//
 	//     const todaysDate = new Date('2022-02-02')

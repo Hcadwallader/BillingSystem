@@ -35,12 +35,16 @@ export const runBilling = async (todaysDate) => {
 	let chargeList = [];
 
 	for (const id of customerIds) {
-		log.warn(`map todays advances for customer: ${customers.has(id)}}`);
 		chargeList = await processRevenue(id, todaysDate, chargeList);
 
 		log.warn(`charge list: ${chargeList}`);
 
 		const customer = getCustomer(id);
+		log.warn(
+			`map todays advances for customer: ${JSON.stringify(
+				customer.advances
+			)}}`
+		);
 
 		chargeList = chargeList.concat(customer.getFailedCharges());
 		chargeList = chargeList.concat(customer.processAdvances(todaysDate));
@@ -78,19 +82,8 @@ export const processNewAdvances = async (todaysAdvances, todaysDate) => {
 			log.debug(`current advance: ${JSON.stringify(ad)}`);
 			customer.addAdvance(ad);
 			log.debug(`customer with advance ${JSON.stringify(customer)}`);
-
-			customers.set(id, { ...customers.get(id), customer });
-			log.debug(
-				`customers with advance ${JSON.stringify([
-					...customers.values(),
-				])}`
-			);
-
-			log.debug(
-				`map todays advances for customer: ${customers.has(
-					customer.id
-				)}}`
-			);
+			customers.set(id, customer);
+			log.debug(`customers with advance ${JSON.stringify(customers)}`);
 		});
 	}
 };
@@ -118,7 +111,7 @@ export const processRevenue = async (id, todaysDate, chargeList) => {
 };
 
 export const processCharge = async (customer, charge, todaysDate) => {
-	let chargeResponse = await issueCharge(
+	const chargeResponse = await issueCharge(
 		charge.mandateId,
 		charge.amount,
 		charge.date
@@ -126,14 +119,14 @@ export const processCharge = async (customer, charge, todaysDate) => {
 	if (chargeResponse) {
 		charge.markAsSuccessful();
 	} else {
-		let currentAdvance = customer.getAdvance(charge.advanceId);
+		const currentAdvance = customer.getAdvance(charge.advanceId);
 		currentAdvance.addFailedChargeToList(charge, todaysDate);
 	}
 	if (charge.finalPayment) {
-		let billingResponse = await billingComplete(charge.advanceId);
+		const billingResponse = await billingComplete(charge.advanceId);
 
 		if (billingResponse) {
-			let advance = customer.advance.get(charge.advanceId);
+			const advance = customer.advance.get(charge.advanceId);
 			advance.updateBillingComplete();
 		}
 	}

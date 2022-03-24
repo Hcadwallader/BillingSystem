@@ -16,13 +16,8 @@ export default class Customer {
 	}
 
 	addAdvance(advance) {
-		log.debug(`add advance for: ${JSON.stringify(advance)}`);
 		let currentAdvance = new Advance(advance);
-		log.debug(
-			`add advance mapped advance: ${JSON.stringify(currentAdvance)}`
-		);
 		this.advances.set(currentAdvance.id, currentAdvance);
-		log.debug(this.advances);
 	}
 
 	getAdvance(id) {

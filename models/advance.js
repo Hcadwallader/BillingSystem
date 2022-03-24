@@ -57,6 +57,6 @@ export default class Advance {
 	}
 
 	getFailedChargesList() {
-		return this.failedCharges;
+		return Array.from(this.failedCharges.values());
 	}
 }
