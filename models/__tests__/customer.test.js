@@ -2,6 +2,8 @@ import Customer from '../customer.js';
 import Advance from '../advance.js';
 import { expect } from '@jest/globals';
 
+import { addDays } from '../../main.js';
+
 jest.mock('../advance.js');
 
 describe('Constructor', () => {
@@ -85,6 +87,15 @@ describe('Process advances', () => {
 		const chargeList = customer.processAdvances(date);
 
 		expect(chargeList).toEqual(['new charge', 'another new charge']);
+	});
+	test('No revenue retrieved doesnt get charge', () => {
+		customer.advances.set(1, new Advance());
+		customer.advances.set(2, new Advance());
+		customer.addRevenue(date, 10000);
+
+		const chargeList = customer.processAdvances(addDays(date));
+
+		expect(chargeList).toEqual([]);
 	});
 
 	test('Doesnt return charges that should be ignored', () => {
