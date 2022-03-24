@@ -13,22 +13,21 @@ let endDate = process.argv[3];
 
 export const customers = new Map();
 
-export const simulate = async() => {
+export const simulate = async () => {
 	log.debug('simulate called');
 	const dateArray = getDates(new Date(startDate), new Date(endDate));
 
-	for (const date of dateArray){
+	for (const date of dateArray) {
 		await runBilling(date);
 	}
 };
 
 export const runBilling = async (todaysDate) => {
 	log.debug('run billing called for ' + todaysDate);
-	// Get advances
+
 	let todaysAdvances = await getAdvances(todaysDate);
 	await processNewAdvances(todaysAdvances, todaysDate);
 
-	// Get revenue
 	let customerIds = customers.keys();
 	let chargeList = [];
 
@@ -44,9 +43,7 @@ export const runBilling = async (todaysDate) => {
 			await processCharge(customer, charge, todaysDate);
 		}
 	}
-	log.debug(
-		`customers ${customers} after billing run for date ${todaysDate}`
-	);
+	log.debug(`After billing run for date ${todaysDate}`);
 	return customers;
 };
 
@@ -86,7 +83,8 @@ export const processCharge = async (customer, charge, todaysDate) => {
 	const chargeResponse = await issueCharge(
 		charge.mandateId,
 		charge.amount,
-		charge.date
+		charge.date,
+		charge.advanceId
 	);
 	if (chargeResponse) {
 		charge.markAsSuccessful();

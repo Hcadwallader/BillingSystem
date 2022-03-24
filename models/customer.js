@@ -33,7 +33,7 @@ export default class Customer {
 	}
 
 	processAdvances(date) {
-		var chargeList = [];
+		let chargeList = [];
 		this.advances.forEach((a) => {
 			let revenue = this.getRevenue(date);
 			if (revenue) {

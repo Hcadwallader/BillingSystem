@@ -37,7 +37,7 @@ export const getRevenue = async (customerId, date, todaysDate) => {
 	}
 };
 
-export const issueCharge = async (mandateId, amount, date) => {
+export const issueCharge = async (mandateId, amount, date, advanceId) => {
 	try {
 		const data = {
 			amount: amount,
@@ -51,8 +51,10 @@ export const issueCharge = async (mandateId, amount, date) => {
 				},
 			}
 		);
-		if(response.data === successResponse) {
-			log.info(`successfully issued charge for mandate ${mandateId} for £${amount} on ${date}`)
+		if (response.data === successResponse) {
+			log.info(
+				`successfully issued charge for advance ${advanceId} mandate ${mandateId} for £${amount} on ${date}`
+			);
 		}
 		return response.data === successResponse;
 	} catch (error) {
