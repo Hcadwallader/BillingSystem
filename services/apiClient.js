@@ -1,6 +1,7 @@
 import pkg from 'axios';
-
 const { get, post } = pkg;
+import log from 'loglevel';
+log.setLevel('debug');
 
 const baseUrl = 'https://billing.eng-test.wayflyer.com';
 const successResponse = 'Accepted';
@@ -14,7 +15,7 @@ export const getAdvances = async (date) => {
 		});
 		return response.data.advances;
 	} catch (error) {
-		console.log(`Error getting advances from API: ${error}`);
+		log.warn(`Error getting advances from API: ${error}`);
 		return [];
 	}
 };
@@ -31,7 +32,7 @@ export const getRevenue = async (customerId, date, todaysDate) => {
 		);
 		return response.data;
 	} catch (error) {
-		console.log(`Error getting revenue from API: ${error}`);
+		log.warn(`Error getting revenue from API: ${error}`);
 		return null;
 	}
 };
@@ -50,9 +51,12 @@ export const issueCharge = async (mandateId, amount, date) => {
 				},
 			}
 		);
+		if(response.data === successResponse) {
+			log.info(`successfully issued charge for mandate ${mandateId} for £${amount} on ${date}`)
+		}
 		return response.data === successResponse;
 	} catch (error) {
-		console.log(`Error when issuing charge: ${error}`);
+		log.warn(`Error when issuing charge: ${error}`);
 		return false;
 	}
 };
@@ -68,9 +72,14 @@ export const billingComplete = async (advanceId, date) => {
 				},
 			}
 		);
+		if (response.data === successResponse) {
+			log.info(
+				`successfully completed billing for advance ${advanceId} on ${date}`
+			);
+		}
 		return response.data === successResponse;
 	} catch (error) {
-		console.log(`Error when issuing charge: ${error}`);
+		log.warn(`Error when issuing charge: ${error}`);
 		return false;
 	}
 };
