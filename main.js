@@ -13,22 +13,6 @@ let endDate = process.argv[3];
 
 export const customers = new Map();
 
-export const getDates = (startDate, endDate) => {
-	let dateArray = [];
-	let currentDate = startDate;
-	while (currentDate < endDate) {
-		dateArray.push(new Date(currentDate).toISOString().slice(0, 10));
-		currentDate.setDate(currentDate.getDate() + 1);
-	}
-	return dateArray;
-};
-
-export const addDays = (date, days) => {
-	let newDate = new Date(date);
-	newDate.setDate(newDate.getDate() + days);
-	return newDate;
-};
-
 export const simulate = () => {
 	//const dateArray = getDates(new Date(startDate), new Date(endDate));
 	//log.info('dateArray ' + dateArray);
@@ -38,6 +22,34 @@ export const simulate = () => {
 	return dateArray.map((d) => {
 		runBilling(d);
 	});
+};
+
+export const runBilling = async (todaysDate) => {
+	log.debug('run billing called for ' + todaysDate);
+	// Get advances
+	let todaysAdvances = await getAdvances(todaysDate);
+	await processNewAdvances(todaysAdvances, todaysDate);
+
+	// Get revenue
+	let customerIds = customers.keys();
+	let chargeList = [];
+
+	for (const id of customerIds) {
+		log.warn(`map todays advances for customer: ${customers.has(id)}}`);
+		chargeList = await processRevenue(id, todaysDate, chargeList);
+
+		log.warn(`charge list: ${chargeList}`);
+
+		let customer = getCustomer(id);
+
+		chargeList = chargeList.concat(customer.getFailedCharges());
+		chargeList = chargeList.concat(customer.processAdvances(todaysDate));
+
+		for (const charge of chargeList) {
+			await processCharge(customer, charge, todaysDate);
+		}
+	}
+	return customers;
 };
 
 export const processNewAdvances = async (todaysAdvances, todaysDate) => {
@@ -67,8 +79,7 @@ export const processNewAdvances = async (todaysAdvances, todaysDate) => {
 			customer.addAdvance(ad);
 			log.debug(`customer with advance ${JSON.stringify(customer)}`);
 
-			//map1.set('address', { ...map1.get('address'), city: 'Santiago' });
-			customers.set(customer.id, { ...customers.get(id), customer });
+			customers.set(id, { ...customers.get(id), customer });
 			log.debug(
 				`customers with advance ${JSON.stringify([
 					...customers.values(),
@@ -106,10 +117,6 @@ export const processRevenue = async (id, todaysDate, chargeList) => {
 	return chargeList;
 };
 
-export const getCustomer = (id) => {
-	return customers.has(id) ? customers.get(id) : new Customer(id);
-};
-
 export const processCharge = async (customer, charge, todaysDate) => {
 	let chargeResponse = await issueCharge(
 		charge.mandateId,
@@ -132,30 +139,21 @@ export const processCharge = async (customer, charge, todaysDate) => {
 	}
 };
 
-export const runBilling = async (todaysDate) => {
-	log.debug('run billing called for ' + todaysDate);
-	// Get advances
-	let todaysAdvances = await getAdvances(todaysDate);
-	await processNewAdvances(todaysAdvances, todaysDate);
-
-	// Get revenue
-	let customerIds = customers.keys();
-	let chargeList = [];
-
-	for (const id of customerIds) {
-		log.warn(`map todays advances for customer: ${customers.has(id)}}`);
-		chargeList = await processRevenue(id, todaysDate, chargeList);
-
-		log.warn(`charge list: ${chargeList}`);
-
-		let customer = getCustomer(id);
-
-		chargeList = chargeList.concat(customer.getFailedCharges());
-		chargeList = chargeList.concat(customer.processAdvances(todaysDate));
-
-		for (const charge of chargeList) {
-			await processCharge(customer, charge, todaysDate);
-		}
+export const getDates = (startDate, endDate) => {
+	let dateArray = [];
+	let currentDate = startDate;
+	while (currentDate < endDate) {
+		dateArray.push(new Date(currentDate).toISOString().slice(0, 10));
+		currentDate.setDate(currentDate.getDate() + 1);
 	}
-	return customers;
+	return dateArray;
+};
+
+export const addDays = (date, days) => {
+	let newDate = new Date(date);
+	newDate.setDate(newDate.getDate() + days);
+	return newDate;
+};
+export const getCustomer = (id) => {
+	return customers.has(id) ? customers.get(id) : new Customer(id);
 };
