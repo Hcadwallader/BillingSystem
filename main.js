@@ -14,9 +14,9 @@ let endDate = process.argv[3];
 export const customers = new Map();
 
 export const simulate = () => {
-	//const dateArray = getDates(new Date(startDate), new Date(endDate));
+	const dateArray = getDates(new Date(startDate), new Date(endDate));
 	//log.info('dateArray ' + dateArray);
-	const dateArray = getDates(new Date('2022-02-05'), new Date('2022-02-06'));
+	//const dateArray = getDates(new Date('2022-02-05'), new Date('2022-02-06'));
 
 	log.debug('simulate called');
 	return dateArray.map((d) => {
@@ -37,14 +37,7 @@ export const runBilling = async (todaysDate) => {
 	for (const id of customerIds) {
 		chargeList = await processRevenue(id, todaysDate, chargeList);
 
-		log.warn(`charge list: ${chargeList}`);
-
 		const customer = getCustomer(id);
-		log.warn(
-			`map todays advances for customer: ${JSON.stringify(
-				customer.advances
-			)}}`
-		);
 
 		chargeList = chargeList.concat(customer.getFailedCharges());
 		chargeList = chargeList.concat(customer.processAdvances(todaysDate));
@@ -53,37 +46,22 @@ export const runBilling = async (todaysDate) => {
 			await processCharge(customer, charge, todaysDate);
 		}
 	}
+	log.debug(`customers ${customers} after billing run for date ${todaysDate}`);
 	return customers;
 };
 
 export const processNewAdvances = async (todaysAdvances, todaysDate) => {
-	log.debug(
-		`process new advances for date: ${todaysDate} and advances: ${JSON.stringify(
-			todaysAdvances
-		)} `
-	);
 
 	if (todaysAdvances.length > 0) {
-		log.debug('advances found for today');
-		// Filter out where repayment_start_date before today
 		let advancesToBePaidBackToday = todaysAdvances.filter(
 			(a) => new Date(a['repayment_start_date']) <= new Date(todaysDate)
 		);
 
-		log.debug(
-			`advances to be paid back today ${JSON.stringify(
-				advancesToBePaidBackToday
-			)}`
-		);
-		// Map advances
 		await advancesToBePaidBackToday.map((ad) => {
 			let id = ad['customer_id'];
 			const customer = getCustomer(id);
-			log.debug(`current advance: ${JSON.stringify(ad)}`);
 			customer.addAdvance(ad);
-			log.debug(`customer with advance ${JSON.stringify(customer)}`);
 			customers.set(id, customer);
-			log.debug(`customers with advance ${JSON.stringify(customers)}`);
 		});
 	}
 };
@@ -91,20 +69,16 @@ export const processNewAdvances = async (todaysAdvances, todaysDate) => {
 export const processRevenue = async (id, todaysDate, chargeList) => {
 	const customer = getCustomer(id);
 	let missingRevenues = customer.getMissingRevenues(todaysDate);
-	log.debug(`missing revenues ${missingRevenues}`);
 
 	for (const date of missingRevenues) {
 		let revenue = await getRevenue(id, date, todaysDate);
 		if (revenue) {
-			log.debug(`revenue ${revenue}`);
 			customer.addRevenue(date, revenue.amount);
 			missingRevenues = missingRevenues.filter((item) => item !== date);
 			chargeList = chargeList.concat(customer.processAdvances(date));
 
-			log.warn(`charge list 1: ${chargeList}`);
 		} else {
 			customer.addMissingRevenue(date);
-			log.debug(`missing revenue ${missingRevenues}`);
 		}
 	}
 	return chargeList;
