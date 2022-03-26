@@ -8,8 +8,8 @@ import Customer from './models/customer.js';
 import log from 'loglevel';
 log.setLevel('debug');
 
-let startDate = process.argv[2];
-let endDate = process.argv[3];
+let startDate = process.argv[2] ?? '2022-01-01';
+let endDate = process.argv[3] ?? '2022-07-01';
 
 export const customers = new Map();
 
