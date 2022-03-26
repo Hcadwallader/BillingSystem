@@ -109,7 +109,7 @@ describe('Process revenue', () => {
 
 		const id = 2;
 		let chargeList = [];
-		let customer = new Customer(id);
+		const customer = new Customer(id);
 		customer.addAdvance(defaultAdvance());
 		customers.set(id, customer);
 		expect(getCustomer(id).revenue.size).toEqual(0);
@@ -128,10 +128,11 @@ describe('Process revenue', () => {
 			.mockReturnValueOnce(Promise.resolve({ amount: 8500 }));
 
 		const id = 2;
+		const customer = new Customer(id);
 		const yesterday = addDays(date, -1);
 		const dayBeforeYesterday = addDays(date, -2);
 		let chargeList = [];
-		let customer = new Customer(id);
+
 		customer.addMissingRevenue(yesterday);
 		customer.addMissingRevenue(dayBeforeYesterday);
 		customer.addAdvance(defaultAdvance());
@@ -167,42 +168,14 @@ describe('Run billing', () => {
 		expect(issueCharge).toBeCalledTimes(0);
 		expect(billingComplete).toBeCalledTimes(0);
 	});
-	// test('Handles single advance that already needs repaying', async () => {
-	//
-	//     const todaysDate = new Date('2022-02-02')
-	//
-	//     getAdvances.mockReturnValueOnce(Promise.resolve([defaultAdvance()]));
-	//     getRevenue.mockReturnValueOnce(Promise.resolve({"amount": 10000}));
-	//     issueCharge.mockReturnValueOnce(Promise.resolve(true));
-	//
-	//     runBilling(todaysDate)
-	//
-	//     // check the right variable is passed in
-	//     expect(getAdvances).toBeCalledTimes(1);
-	//     const advanceCall = getAdvances.mock.calls[0] // will give you the first call to the mock
-	//     expect(advanceCall[0]).toMatchObject(todaysDate)
-	//
-	//     expect(getRevenue).toBeCalledTimes(1);
-	//     const revenueCall = getRevenue.mock.calls[0] // will give you the first call to the mock
-	//     expect(revenueCall[0]).toMatchObject(defaultCustomerId)
-	//     expect(revenueCall[1]).toMatchObject(todaysDate)
-	//
-	//     expect(issueCharge).toBeCalledTimes(1);
-	//     const chargeCall = issueCharge.mock.calls[0] // will give you the first call to the mock
-	//     expect(chargeCall[0]).toMatchObject(defaultMandateId)
-	//     expect(chargeCall[1]).toMatchObject(6600)
-	//     expect(chargeCall[2]).toMatchObject(todaysDate)
-	//
-	//     expect(billingComplete).toBeCalledTimes(0);
-	// });
 });
 
 describe('Process charge', () => {
 	test('Processes valid charge', async () => {
-		let customer = new Customer(defaultCustomerId);
+		const customer = new Customer(defaultCustomerId);
 		customer.addAdvance(defaultAdvance());
 		customer.addRevenue(date, 10000);
-		let chargeList = customer.processAdvances(date);
+		const chargeList = customer.processAdvances(date);
 		customers.set(defaultCustomerId, customer);
 
 		issueCharge.mockReturnValueOnce(Promise.resolve(true));
@@ -226,10 +199,10 @@ describe('Process charge', () => {
 	});
 
 	test('Handles failed Charge', async () => {
-		let customer = new Customer(defaultCustomerId);
+		const customer = new Customer(defaultCustomerId);
 		customer.addAdvance(defaultAdvance());
 		customer.addRevenue(date, 10000);
-		let chargeList = customer.processAdvances(date);
+		const chargeList = customer.processAdvances(date);
 		customers.set(defaultCustomerId, customer);
 
 		issueCharge.mockReturnValueOnce(Promise.resolve(false));
@@ -253,13 +226,13 @@ describe('Process charge', () => {
 	});
 
 	test('marks billing complete', async () => {
-		let customer = new Customer(defaultCustomerId);
+		const customer = new Customer(defaultCustomerId);
 		let advance = defaultAdvance();
 		advance.total_advanced = 100;
 		advance.fee = 50;
 		customer.addAdvance(advance);
 		customer.addRevenue(date, 100000);
-		let chargeList = customer.processAdvances(date);
+		const chargeList = customer.processAdvances(date);
 		customers.set(defaultCustomerId, customer);
 
 		issueCharge.mockReturnValueOnce(Promise.resolve(true));

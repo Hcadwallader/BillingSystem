@@ -6,7 +6,6 @@ import {
 } from '../apiClient.js';
 import axios from 'axios';
 
-const advancesUrl = `https://billing.eng-test.wayflyer.com/advances`;
 const defaultDate = '2022-03-01';
 const defaultAdvance = '1';
 const customerId = '4';
@@ -16,6 +15,7 @@ const defaultAmount = '7';
 jest.mock('axios');
 
 describe('Get advances', () => {
+	const advancesUrl = `https://billing.eng-test.wayflyer.com/advances`;
 	test('Handles successful response', async () => {
 		const data = {
 			advances: [

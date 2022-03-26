@@ -4,7 +4,7 @@ import Charge from '../charge.js';
 
 describe('Constructor', () => {
 	test('Minimum number of fields provided', () => {
-		let advance = new Advance({
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 5,
@@ -28,7 +28,7 @@ describe('Constructor', () => {
 });
 describe('Calculate charge', () => {
 	test('Calculates charge correctly', () => {
-		let advance = new Advance({
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 5,
@@ -36,14 +36,14 @@ describe('Calculate charge', () => {
 			total_advanced: 60000,
 			repayment_start_date: '2022-02-01',
 		});
-		let date = new Date('2022-02-02');
-		let revenue = 16000;
+		const date = new Date('2022-02-02');
+		const revenue = 16000;
 		expect(advance.calculateCharge(revenue, date)).toEqual(
 			new Charge(date, '800.00', 2, 1)
 		);
 	});
 	test('Marks final charge correctly', () => {
-		let advance = new Advance({
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 4,
 			repayment_percentage: 10,
@@ -51,14 +51,14 @@ describe('Calculate charge', () => {
 			total_advanced: 900,
 			repayment_start_date: '2022-02-01',
 		});
-		let date = new Date('2022-02-02');
-		let revenue = 10000;
+		const date = new Date('2022-02-02');
+		const revenue = 10000;
 		expect(advance.calculateCharge(revenue, date)).toEqual(
 			new Charge(date, '1000.00', 4, 1, true)
 		);
 	});
 	test('Charge does not exceed total amount owed', () => {
-		let advance = new Advance({
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 10,
@@ -66,14 +66,14 @@ describe('Calculate charge', () => {
 			total_advanced: 900,
 			repayment_start_date: '2022-02-01',
 		});
-		let date = new Date('2022-02-02');
-		let revenue = 100000;
+		const date = new Date('2022-02-02');
+		const revenue = 100000;
 		expect(advance.calculateCharge(revenue, date)).toEqual(
 			new Charge(date, '1000.00', 2, 1, true)
 		);
 	});
 	test('Charge only taken after repayment start date', () => {
-		let advance = new Advance({
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 10,
@@ -81,12 +81,12 @@ describe('Calculate charge', () => {
 			total_advanced: 900,
 			repayment_start_date: '2022-02-05',
 		});
-		let date = new Date('2022-02-01');
-		let revenue = 100000;
+		const date = new Date('2022-02-01');
+		const revenue = 100000;
 		expect(advance.calculateCharge(revenue, date)).toEqual(null);
 	});
 	test('No charge taken if advance already repaid', () => {
-		let advance = new Advance({
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 10,
@@ -94,15 +94,15 @@ describe('Calculate charge', () => {
 			total_advanced: 900,
 			repayment_start_date: '2022-02-05',
 		});
-		let date = new Date('2022-02-01');
-		let revenue = 100000;
+		const date = new Date('2022-02-01');
+		const revenue = 100000;
 		// first payment
 		advance.calculateCharge(revenue, date);
 		// second one shouldn't be taken
 		expect(advance.calculateCharge(revenue, date)).toEqual(null);
 	});
 	test('Amount to be paid back over 10000', () => {
-		let advance = new Advance({
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 10,
@@ -132,7 +132,7 @@ describe('Calculate charge', () => {
 
 describe('Update billing complete', () => {
 	test('Updates advance as complete for correct customer', () => {
-		let advance = new Advance({
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 5,
@@ -149,9 +149,9 @@ describe('Update billing complete', () => {
 
 describe('Add failed charge to list', () => {
 	test('Add new failed charge to list', () => {
-		let date = '2022-02-01';
-		let charge = new Charge(date, 1000, 2, 1);
-		let advance = new Advance({
+		const date = '2022-02-01';
+		const charge = new Charge(date, 1000, 2, 1);
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 5,
@@ -167,9 +167,9 @@ describe('Add failed charge to list', () => {
 		expect(advance.failedCharges.get(date)).toBe(charge);
 	});
 	test('Doesnt add existing failed charge to list', () => {
-		let date = '2022-02-01';
-		let charge = new Charge(date, 1000, 2, 1);
-		let advance = new Advance({
+		const date = '2022-02-01';
+		const charge = new Charge(date, 1000, 2, 1);
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 5,
@@ -192,9 +192,9 @@ describe('Add failed charge to list', () => {
 
 describe('Get failed charges list', () => {
 	test('Get a list of failed charges', () => {
-		let date = '2022-02-01';
-		let charge = new Charge(date, 1000, 2, 1);
-		let advance = new Advance({
+		const date = '2022-02-01';
+		const charge = new Charge(date, 1000, 2, 1);
+		const advance = new Advance({
 			id: 1,
 			mandate_id: 2,
 			repayment_percentage: 5,

@@ -25,10 +25,10 @@ export const simulate = async () => {
 export const runBilling = async (todaysDate) => {
 	log.debug('run billing called for ' + todaysDate);
 
-	let todaysAdvances = await getAdvances(todaysDate);
+	const todaysAdvances = await getAdvances(todaysDate);
 	await processNewAdvances(todaysAdvances, todaysDate);
 
-	let customerIds = customers.keys();
+	const customerIds = customers.keys();
 
 	for (const id of customerIds) {
 		let chargeList = [];
@@ -44,17 +44,16 @@ export const runBilling = async (todaysDate) => {
 		}
 	}
 	log.debug(`After billing run for date ${todaysDate}`);
-	return customers;
 };
 
 export const processNewAdvances = async (todaysAdvances, todaysDate) => {
 	if (todaysAdvances.length > 0) {
-		let advancesToBePaidBackToday = todaysAdvances.filter(
+		const advancesToBePaidBackToday = todaysAdvances.filter(
 			(a) => new Date(a['repayment_start_date']) <= new Date(todaysDate)
 		);
 
 		await advancesToBePaidBackToday.map((ad) => {
-			let id = ad['customer_id'];
+			const id = ad['customer_id'];
 			const customer = getCustomer(id);
 			customer.addAdvance(ad);
 			customers.set(id, customer);
@@ -67,7 +66,7 @@ export const processRevenue = async (id, todaysDate, chargeList) => {
 	let missingRevenues = customer.getMissingRevenues(todaysDate);
 
 	for (const date of missingRevenues) {
-		let revenue = await getRevenue(id, date, todaysDate);
+		const revenue = await getRevenue(id, date, todaysDate);
 		if (revenue) {
 			customer.addRevenue(date, revenue.amount);
 			missingRevenues = missingRevenues.filter((item) => item !== date);

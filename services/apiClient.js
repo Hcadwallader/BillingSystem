@@ -55,7 +55,7 @@ export const issueCharge = async (mandateId, amount, date, advanceId) => {
 			}
 		);
 		if (response.data === successResponse) {
-			log.info(
+			log.debug(
 				`successfully issued charge for advance ${advanceId} mandate ${mandateId} for £${amount} on ${date}`
 			);
 		}
@@ -81,7 +81,7 @@ export const billingComplete = async (advanceId, date) => {
 			}
 		);
 		if (response.data === successResponse) {
-			log.info(
+			log.debug(
 				`successfully completed billing for advance ${advanceId} on ${date}`
 			);
 		}

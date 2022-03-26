@@ -39,7 +39,7 @@ describe('Add advance', () => {
 			return { id: advance.id };
 		});
 
-		let customer = new Customer(4);
+		const customer = new Customer(4);
 		expect(customer.advances).toBeInstanceOf(Map);
 		customer.addAdvance(advance);
 
@@ -50,12 +50,12 @@ describe('Add advance', () => {
 
 describe('Add revenue', () => {
 	test('Adds a revenue to correct customer for the date passed in', () => {
-		let customer = new Customer(4);
+		const customer = new Customer(4);
 
 		expect(customer.revenue).toBeInstanceOf(Map);
 
-		let date = '2022-02-01';
-		let amount = 1000;
+		const date = '2022-02-01';
+		const amount = 1000;
 		customer.addRevenue(date, amount);
 
 		expect(customer.revenue.has(date)).toBe(true);
@@ -133,22 +133,20 @@ describe('Process advances', () => {
 
 describe('Add missing revenue', () => {
 	test('Adds new date to missing revenue list', () => {
-		let customer = new Customer(4);
+		const customer = new Customer(4);
+		const date = '2022-02-01';
 
 		expect(customer.missingRevenue).toStrictEqual([]);
-
-		let date = '2022-02-01';
 
 		customer.addMissingRevenue(date);
 
 		expect(customer.missingRevenue).toContainEqual(date);
 	});
 	test('Date already in missing revenue list not added more than once', () => {
-		let customer = new Customer(4);
+		const customer = new Customer(4);
+		const date = '2022-02-01';
 
 		expect(customer.missingRevenue).toStrictEqual([]);
-
-		let date = '2022-02-01';
 
 		customer.addMissingRevenue(date);
 		expect(customer.missingRevenue).toContainEqual(date);
@@ -160,7 +158,7 @@ describe('Add missing revenue', () => {
 
 describe('Get failed charges', () => {
 	test('Adds new date to missing revenue list', () => {
-		let customer = new Customer(4);
+		const customer = new Customer(4);
 
 		Advance.mockImplementationOnce(() => {
 			return {

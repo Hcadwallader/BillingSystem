@@ -1,7 +1,4 @@
 import Advance from './advance.js';
-import log from 'loglevel';
-import { LOGICAL_OPERATORS } from '@babel/types';
-log.setLevel('debug');
 
 export default class Customer {
 	constructor(id) {
@@ -35,9 +32,9 @@ export default class Customer {
 	processAdvances(date) {
 		let chargeList = [];
 		this.advances.forEach((a) => {
-			let revenue = this.getRevenue(date);
+			const revenue = this.getRevenue(date);
 			if (revenue) {
-				let charge = a.calculateCharge(revenue, date);
+				const charge = a.calculateCharge(revenue, date);
 				if (charge) {
 					chargeList.push(charge);
 				}
